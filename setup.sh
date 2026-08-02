@@ -35,8 +35,17 @@ if [[ ! -f "$SOLUTION_FILE" ]]; then
     exit 1
 fi
 
+# Restore local tools
+step "Restoring local .NET tools..."
+dotnet tool restore
+if [[ $? -ne 0 ]]; then
+    fail "Local tool restore failed."
+    exit 1
+fi
+ok "Local .NET tools restored."
+
 # Restore
-step "Restoring NuGet packages..."
+step "Restoring NuGet packages and evaluating package versions..."
 dotnet restore "$SOLUTION_FILE"
 ok "NuGet restore succeeded."
 

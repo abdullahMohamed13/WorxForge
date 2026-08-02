@@ -36,6 +36,15 @@ if (-not (Test-Path $SolutionFile)) {
     exit 1
 }
 
+# Restore local tools
+Write-Step 'Restoring local .NET tools...'
+dotnet tool restore
+if ($LASTEXITCODE -ne 0) {
+    Write-Fail 'Local tool restore failed.'
+    exit 1
+}
+Write-Ok 'Local .NET tools restored.'
+
 # Restore
 Write-Step 'Restoring NuGet packages and evaluating package versions...'
 dotnet restore $SolutionFile --force-evaluate

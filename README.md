@@ -69,6 +69,7 @@ chmod +x setup.sh
 The setup scripts:
 
 - verify the .NET SDK is installed
+- restore local .NET tools
 - restore centrally managed NuGet packages
 - build the solution
 
@@ -110,6 +111,17 @@ dotnet ef database update --project .\src\WorxForge.Infrastructure\WorxForge.Inf
 - Do not use `master`
 - No database file is stored in the repository
 - The schema is created in the SQL Server instance you point the connection string at
+
+## NSwag client generation
+
+NSwag is restored as a local .NET tool when you run the setup script.
+
+After setup, you can invoke it from the repository root with:
+
+```powershell
+dotnet tool restore
+dotnet tool run nswag
+```
 
 ## Build
 
