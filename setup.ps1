@@ -37,8 +37,8 @@ if (-not (Test-Path $SolutionFile)) {
 }
 
 # Restore
-Write-Step 'Restoring NuGet packages...'
-dotnet restore $SolutionFile
+Write-Step 'Restoring NuGet packages and evaluating package versions...'
+dotnet restore $SolutionFile --force-evaluate
 if ($LASTEXITCODE -ne 0) {
     Write-Fail 'NuGet restore failed.'
     exit 1
