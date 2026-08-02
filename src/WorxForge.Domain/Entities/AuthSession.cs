@@ -1,6 +1,5 @@
 ﻿namespace WorxForge.Domain.Entities;
 
-// TODO: AUTH_SESSION lifecycle details (single vs multi-session, revocation) pending decision.
 public sealed class AuthSession
 {
     public Guid SessionId { get; set; }
@@ -10,4 +9,3 @@ public sealed class AuthSession
     public DateTime ExpiresAt { get; set; }
     public DateTime? RevokedAt { get; set; }
 }
-

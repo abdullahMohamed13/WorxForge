@@ -10,8 +10,6 @@ public sealed class Asset
     public Guid AssetTypeId { get; set; }
     public Guid DomainId { get; set; }
     public Guid UseCaseId { get; set; }
-    public string? Version { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
-
