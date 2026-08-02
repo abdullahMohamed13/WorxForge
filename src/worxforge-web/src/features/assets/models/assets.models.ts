@@ -1,0 +1,65 @@
+﻿export interface AssetSummary {
+  assetId: string;
+  title: string;
+  description?: string;
+  assetTypeName: string;
+  domainName: string;
+  tags: string[];
+  authorDisplayName: string;
+  createdAt: string;
+  updatedAt: string;
+  reactionCount: number;
+  commentCount: number;
+  isBookmarked: boolean;
+}
+
+export interface AssetDetails extends AssetSummary {
+  markdownContent: string;
+  useCaseName: string;
+  compatibleTools: string[];
+  version?: string;
+  authorId: string;
+  authorAvatarUrl?: string;
+  viewCount: number;
+  isFollowing: boolean;
+}
+
+export interface AssetComment {
+  commentId: string;
+  assetId: string;
+  parentCommentId?: string;
+  authorDisplayName: string;
+  authorAvatarUrl?: string;
+  content: string;
+  createdAt: string;
+  replies: AssetComment[];
+}
+
+export interface MyAsset {
+  assetId: string;
+  title: string;
+  assetTypeName: string;
+  version?: string;
+  createdAt: string;
+  updatedAt: string;
+  viewCount: number;
+  bookmarkCount: number;
+  commentCount: number;
+  reactionCount: number;
+}
+
+export interface CreateAssetRequest {
+  title: string;
+  description?: string;
+  assetTypeId: string;
+  domainId: string;
+  useCaseId: string;
+  toolIds: string[];
+  tags: string[];
+  version?: string;
+  markdownContent: string;
+}
+
+export interface UpdateAssetRequest extends CreateAssetRequest {
+  assetId: string;
+}
