@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WorxForge.Core.Interfaces.Repositories;
 using WorxForge.Core.Interfaces.Services;
+using WorxForge.Infrastructure.Mapping.Profiles;
 using WorxForge.Infrastructure.Options;
 using WorxForge.Infrastructure.Repositories;
 using WorxForge.Infrastructure.Services;
@@ -12,6 +14,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddWorxForgeInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddDbContext<WorxForgeDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        services.AddAutoMapper(typeof(DomainMappingProfile).Assembly);
+
         services.Configure<JwtAccessTokenOptions>(configuration.GetSection(JwtAccessTokenOptions.SectionName));
         services.Configure<PasswordPolicyOptions>(configuration.GetSection(PasswordPolicyOptions.SectionName));
         services.Configure<PaginationOptions>(configuration.GetSection(PaginationOptions.SectionName));

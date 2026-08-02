@@ -53,6 +53,20 @@ The setup scripts verify that the .NET SDK is installed, restore all NuGet packa
 
 ---
 
+## Local Secrets (Development)
+
+Initialize and set secrets for the API project:
+
+```bash
+dotnet user-secrets init --project src/WorxForge.API/WorxForge.API.csproj
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<your-dev-connection-string>" --project src/WorxForge.API/WorxForge.API.csproj
+dotnet user-secrets set "JwtAccessToken:Issuer" "WorxForge.Dev" --project src/WorxForge.API/WorxForge.API.csproj
+dotnet user-secrets set "JwtAccessToken:Audience" "WorxForge.Client.Dev" --project src/WorxForge.API/WorxForge.API.csproj
+dotnet user-secrets set "JwtAccessToken:SigningKey" "<your-dev-signing-key>" --project src/WorxForge.API/WorxForge.API.csproj
+```
+
+---
+
 ## Build
 
 ```bash

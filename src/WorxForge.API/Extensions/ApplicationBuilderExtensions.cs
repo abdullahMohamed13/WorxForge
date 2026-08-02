@@ -7,6 +7,13 @@ public static class ApplicationBuilderExtensions
 {
     public static WebApplication UseWorxForgePipeline(this WebApplication app)
     {
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.MapOpenApi();
+        }
+
         app.UseMiddleware<ExceptionMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
