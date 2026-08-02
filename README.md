@@ -1,84 +1,132 @@
 # WorxForge Backend
 
-Backend API for the WorxForge platform, built with ASP.NET Core following Clean Architecture principles.
+Backend API for the WorxForge platform, built with ASP.NET Core and organized for Clean Architecture.
 
----
+## What this repository contains
 
-## Repository Structure
+- ASP.NET Core API
+- Core application abstractions
+- Domain entities, commands, queries, and DTOs
+- Infrastructure layer with EF Core and supporting services
+- Unit, integration, and system test projects
+- Repository-level build and setup configuration
+
+## Repository structure
 
 ```
 /
+├── .editorconfig
+├── .gitignore
+├── Directory.Build.props
+├── Directory.Packages.props
+├── global.json
+├── README.md
+├── setup.ps1
+├── setup.sh
 ├── docs/
-│   ├── architecture/      Architecture notes and decisions
-│   ├── requirements/      Product requirements and specifications
-│   └── archive/           Historical phase handoffs
-├── src/
-│   ├── WorxForge.API/         Presentation layer — Minimal API endpoints and middleware
-│   ├── WorxForge.Core/        Application layer — Handlers, validators, and interfaces
-│   ├── WorxForge.Domain/      Domain layer — Entities, commands, queries, and DTOs
-│   ├── WorxForge.Infrastructure/  Infrastructure layer — Repository and service implementations
-│   └── Tests/
-│       ├── UnitTests/
-│       ├── IntegrationTests/
-│       └── SystemTests/
-├── setup.ps1              Windows setup script
-└── setup.sh               Linux/macOS setup script
+│   ├── architecture/
+│   ├── requirements/
+│   └── archive/
+└── src/
+    ├── WorxForge.API/
+    ├── WorxForge.Core/
+    ├── WorxForge.Domain/
+    ├── WorxForge.Infrastructure/
+    └── Tests/
 ```
-
----
 
 ## Prerequisites
 
-- [.NET SDK 10.0.302](https://dotnet.microsoft.com/download) or later in the `10.0.x` range
+- .NET SDK 10.0.302 or compatible `10.0.x`
 - Git
+- SQL Server instance for local development
+- PowerShell 5.1+ on Windows or Bash on Linux/macOS
 
----
+## Quick start
 
-## Setup
+### 1) Clone the repository
 
-### Windows (PowerShell)
+```bash
+git clone <repo-url>
+cd WorxForge.Backend
+```
+
+### 2) Run the setup script
+
+#### Windows
 
 ```powershell
 .\setup.ps1
 ```
 
-### Linux / macOS (Bash)
+#### Linux / macOS
 
 ```bash
 chmod +x setup.sh
 ./setup.sh
 ```
 
-The setup scripts verify that the .NET SDK is installed, restore all NuGet packages, and build the solution.
+The setup scripts:
 
----
+- verify the .NET SDK is installed
+- restore centrally managed NuGet packages
+- build the solution
 
-## Local Secrets (Development)
+## Local development configuration
 
-Initialize and set secrets for the API project:
+This repository uses ASP.NET Core User Secrets for local-sensitive settings.
 
-```bash
-dotnet user-secrets init --project src/WorxForge.API/WorxForge.API.csproj
-dotnet user-secrets set "ConnectionStrings:DefaultConnection" "<your-dev-connection-string>" --project src/WorxForge.API/WorxForge.API.csproj
-dotnet user-secrets set "JwtAccessToken:Issuer" "WorxForge.Dev" --project src/WorxForge.API/WorxForge.API.csproj
-dotnet user-secrets set "JwtAccessToken:Audience" "WorxForge.Client.Dev" --project src/WorxForge.API/WorxForge.API.csproj
-dotnet user-secrets set "JwtAccessToken:SigningKey" "<your-dev-signing-key>" --project src/WorxForge.API/WorxForge.API.csproj
+### API project secrets
+
+Use these commands from the repository root:
+
+```powershell
+dotnet user-secrets init --project .\src\WorxForge.API\WorxForge.API.csproj
+dotnet user-secrets set --project .\src\WorxForge.API\WorxForge.API.csproj "ConnectionStrings:DefaultConnection" "Data Source=localhost;Initial Catalog=WorxForge;Integrated Security=True;Pooling=False;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True;Application Name=vscode-mssql;Application Intent=ReadWrite;Command Timeout=30"
+dotnet user-secrets set --project .\src\WorxForge.API\WorxForge.API.csproj "JwtAccessToken:Issuer" "WorxForge.Dev"
+dotnet user-secrets set --project .\src\WorxForge.API\WorxForge.API.csproj "JwtAccessToken:Audience" "WorxForge.Client.Dev"
+dotnet user-secrets set --project .\src\WorxForge.API\WorxForge.API.csproj "JwtAccessToken:SigningKey" "<your-dev-signing-key>"
 ```
 
----
+### Verify secrets
+
+```powershell
+dotnet user-secrets list --project .\src\WorxForge.API\WorxForge.API.csproj
+```
+
+## Database setup
+
+The database is created through EF Core migrations against your local SQL Server instance.
+
+### Apply the initial migration
+
+```powershell
+dotnet ef database update --project .\src\WorxForge.Infrastructure\WorxForge.Infrastructure.csproj --startup-project .\src\WorxForge.API\WorxForge.API.csproj --context WorxForge.Infrastructure.Configuration.WorxForgeDbContext
+```
+
+### Notes
+
+- Use a dedicated app database such as `WorxForge`
+- Do not use `master`
+- No database file is stored in the repository
+- The schema is created in the SQL Server instance you point the connection string at
 
 ## Build
 
-```bash
-dotnet build src/WorxForge.slnx
+```powershell
+dotnet build .\src\WorxForge.slnx
 ```
-
----
 
 ## Documentation
 
-| Location | Contents |
-|---|---|
-| [`docs/requirements/`](docs/requirements/) | Software Requirements Specification, Business Requirements Document, Database Design |
-| [`docs/architecture/`](docs/architecture/) | Architecture notes and open decisions |
-| [`docs/archive/`](docs/archive/) | Historical phase handoff documents |
+- [`docs/requirements/`](docs/requirements/) — SRS, BRD, and database design
+- [`docs/architecture/`](docs/architecture/) — architecture notes and decisions
+- [`docs/archive/`](docs/archive/) — historical and final handoff documents
+
+## Current setup status
+
+- Repository foundation is in place
+- Central package management is enabled
+- User Secrets are configured on the API project
+- EF Core migration baseline exists
+- Seed data exists for documented lookup tables
