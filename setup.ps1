@@ -13,7 +13,7 @@ function Write-Step  { Write-Host "  --> $args" -ForegroundColor Cyan   }
 function Write-Ok    { Write-Host "  [OK] $args" -ForegroundColor Green  }
 function Write-Fail  { Write-Host "  [FAIL] $args" -ForegroundColor Red  }
 
-$FrontendDir = Join-Path $PSScriptRoot 'worxforge-web'
+$FrontendDir = Join-Path $PSScriptRoot 'src\worxforge-web'
 
 Write-Host ''
 Write-Host '==============================' -ForegroundColor DarkCyan
@@ -48,13 +48,13 @@ if (-not (Test-Path $FrontendDir)) {
 Push-Location $FrontendDir
 try {
     # Install dependencies
-    Write-Step 'Installing npm dependencies...'
-    npm install
+    Write-Step 'Installing npm dependencies from lock file...'
+    npm ci
     if ($LASTEXITCODE -ne 0) {
-        Write-Fail 'npm install failed.'
+        Write-Fail 'npm ci failed.'
         exit 1
     }
-    Write-Ok 'npm install succeeded.'
+    Write-Ok 'npm dependency install succeeded.'
 
     # Verify build
     Write-Step 'Verifying frontend build...'

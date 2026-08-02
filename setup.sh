@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FRONTEND_DIR="$SCRIPT_DIR/worxforge-web"
+FRONTEND_DIR="$SCRIPT_DIR/src/worxforge-web"
 
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
@@ -47,9 +47,9 @@ fi
 cd "$FRONTEND_DIR"
 
 # Install dependencies
-step "Installing npm dependencies..."
-npm install
-ok "npm install succeeded."
+step "Installing npm dependencies from lock file..."
+npm ci
+ok "npm dependency install succeeded."
 
 # Verify build
 step "Verifying frontend build..."
