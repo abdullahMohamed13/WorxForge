@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOLUTION_FILE="$SCRIPT_DIR/WorxForge.slnx"
+SOLUTION_FILE="$SCRIPT_DIR/src/WorxForge.slnx"
 
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
