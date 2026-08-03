@@ -2,6 +2,7 @@
 using WorxForge.Domain.Commands.Comments;
 using WorxForge.Domain.Commands.Library;
 using WorxForge.Domain.Queries.Assets;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WorxForge.API.EndpointGroups;
 
@@ -28,15 +29,15 @@ public static class AssetsEndpointGroup
 
     private static Task<IResult> CreateAssetAsync(CreateAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> UpdateAssetAsync(UpdateAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
-    private static Task<IResult> DeleteAssetAsync(DeleteAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static Task<IResult> DeleteAssetAsync([FromBody] DeleteAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> PreviewAssetAsync(PreviewAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> GetAssetDetailsAsync([AsParameters] GetAssetDetailsQuery query, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> GetAssetCommentsAsync([AsParameters] GetAssetCommentsQuery query, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> CreateAssetCommentAsync(CreateAssetCommentCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
-    private static Task<IResult> DeleteAssetCommentAsync(DeleteAssetCommentCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static Task<IResult> DeleteAssetCommentAsync([FromBody] DeleteAssetCommentCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> BookmarkAssetAsync(BookmarkAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
-    private static Task<IResult> RemoveBookmarkAsync(RemoveBookmarkCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static Task<IResult> RemoveBookmarkAsync([FromBody] RemoveBookmarkCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> FollowAssetAsync(FollowAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
-    private static Task<IResult> UnfollowAssetAsync(UnfollowAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static Task<IResult> UnfollowAssetAsync([FromBody] UnfollowAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> ReactToAssetAsync(ReactToAssetCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
 }

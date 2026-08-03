@@ -1,5 +1,6 @@
 ﻿using WorxForge.Domain.Commands.Admin;
 using WorxForge.Domain.Queries.Admin;
+using Microsoft.AspNetCore.Mvc;
 
 namespace WorxForge.API.EndpointGroups;
 
@@ -22,11 +23,11 @@ public static class AdminEndpointGroup
 
     private static Task<IResult> GetAdminUsersAsync([AsParameters] GetAdminUsersQuery query, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> CreateUserByAdminAsync(CreateUserByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
-    private static Task<IResult> DeleteUserByAdminAsync(DeleteUserByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static Task<IResult> DeleteUserByAdminAsync([FromBody] DeleteUserByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> GetAdminAssetsAsync([AsParameters] GetAdminAssetsQuery query, CancellationToken cancellationToken) => throw new NotImplementedException();
-    private static Task<IResult> DeleteAssetByAdminAsync(DeleteAssetByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static Task<IResult> DeleteAssetByAdminAsync([FromBody] DeleteAssetByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> GetAdminCommentsAsync([AsParameters] GetAdminCommentsQuery query, CancellationToken cancellationToken) => throw new NotImplementedException();
-    private static Task<IResult> DeleteCommentByAdminAsync(DeleteCommentByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
+    private static Task<IResult> DeleteCommentByAdminAsync([FromBody] DeleteCommentByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> GetAdminReportsAsync([AsParameters] GetAdminReportsQuery query, CancellationToken cancellationToken) => throw new NotImplementedException();
     private static Task<IResult> ResolveReportByAdminAsync(ResolveReportByAdminCommand command, CancellationToken cancellationToken) => throw new NotImplementedException();
 }
