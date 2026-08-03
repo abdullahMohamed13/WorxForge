@@ -13,7 +13,7 @@ function Write-Step  { Write-Host "  --> $args" -ForegroundColor Cyan   }
 function Write-Ok    { Write-Host "  [OK] $args" -ForegroundColor Green  }
 function Write-Fail  { Write-Host "  [FAIL] $args" -ForegroundColor Red  }
 
-$FrontendDir = Join-Path $PSScriptRoot 'src\worxforge-web'
+$FrontendDir = Join-Path $PSScriptRoot 'worxforge-web'
 
 Write-Host ''
 Write-Host '==============================' -ForegroundColor DarkCyan
