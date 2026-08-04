@@ -17,80 +17,59 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
     public Task<IReadOnlyList<AssetSummaryDto>> GetFeaturedAsync(int limit, CancellationToken cancellationToken) => throw new NotImplementedException();
     public Task<IReadOnlyList<AssetSummaryDto>> GetTrendingAsync(int limit, CancellationToken cancellationToken) => throw new NotImplementedException();
 
+    // Shared projection so every "browse" style query maps Asset -> AssetSummaryDto identically;
+    // callers apply their own Where/OrderBy/Take before projecting.
+    private IQueryable<AssetSummaryDto> SelectAssetSummaries(IQueryable<Asset> assets, Guid userId) =>
+        assets.Select(asset => new AssetSummaryDto
+        {
+            AssetId = asset.AssetId,
+            Title = asset.Title,
+            Description = asset.Description,
+            AssetTypeName = dbContext.AssetTypes
+                .Where(assetType => assetType.AssetTypeId == asset.AssetTypeId)
+                .Select(assetType => assetType.Name)
+                .First(),
+            DomainName = dbContext.BusinessDomains
+                .Where(domain => domain.DomainId == asset.DomainId)
+                .Select(domain => domain.Name)
+                .First(),
+            Tools = dbContext.AssetTools
+                .Where(assetTool => assetTool.AssetId == asset.AssetId)
+                .Join(dbContext.Tools, assetTool => assetTool.ToolId, tool => tool.ToolId, (assetTool, tool) => tool.Name)
+                .ToList(),
+            AuthorDisplayName = dbContext.Users
+                .Where(user => user.UserId == asset.AuthorId)
+                .Select(user => user.DisplayName)
+                .First(),
+            CreatedAt = asset.CreatedAt,
+            UpdatedAt = asset.UpdatedAt,
+            ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId),
+            CommentCount = dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null),
+            IsBookmarked = dbContext.Bookmarks.Any(bookmark => bookmark.AssetId == asset.AssetId && bookmark.UserId == userId)
+        });
+
     public async Task<IReadOnlyList<AssetSummaryDto>> GetUsefulThisWeekAsync(Guid userId, int limit, CancellationToken cancellationToken)
     {
         var since = DateTime.UtcNow.AddDays(-7);
 
-        return await dbContext.Assets
+        var recentlyLikedAssets = dbContext.Assets
             .AsNoTracking()
             .Where(asset => asset.CreatedAt >= since)
             .OrderByDescending(asset => dbContext.Reactions.Count(reaction =>
                 reaction.AssetId == asset.AssetId && reaction.ReactionType == ReactionTypeConstants.Like))
-            .Take(limit)
-            .Select(asset => new AssetSummaryDto
-            {
-                AssetId = asset.AssetId,
-                Title = asset.Title,
-                Description = asset.Description,
-                AssetTypeName = dbContext.AssetTypes
-                    .Where(assetType => assetType.AssetTypeId == asset.AssetTypeId)
-                    .Select(assetType => assetType.Name)
-                    .First(),
-                DomainName = dbContext.BusinessDomains
-                    .Where(domain => domain.DomainId == asset.DomainId)
-                    .Select(domain => domain.Name)
-                    .First(),
-                Tools = dbContext.AssetTools
-                    .Where(assetTool => assetTool.AssetId == asset.AssetId)
-                    .Join(dbContext.Tools, assetTool => assetTool.ToolId, tool => tool.ToolId, (assetTool, tool) => tool.Name)
-                    .ToList(),
-                AuthorDisplayName = dbContext.Users
-                    .Where(user => user.UserId == asset.AuthorId)
-                    .Select(user => user.DisplayName)
-                    .First(),
-                CreatedAt = asset.CreatedAt,
-                UpdatedAt = asset.UpdatedAt,
-                ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId),
-                CommentCount = dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null),
-                IsBookmarked = dbContext.Bookmarks.Any(bookmark => bookmark.AssetId == asset.AssetId && bookmark.UserId == userId)
-            })
-            .ToListAsync(cancellationToken);
+            .Take(limit);
+
+        return await SelectAssetSummaries(recentlyLikedAssets, userId).ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<AssetSummaryDto>> GetRecentlyUpdatedAsync(Guid userId, int limit, CancellationToken cancellationToken)
     {
-        return await dbContext.Assets
+        var recentlyUpdatedAssets = dbContext.Assets
             .AsNoTracking()
             .OrderByDescending(asset => asset.UpdatedAt)
-            .Take(limit)
-            .Select(asset => new AssetSummaryDto
-            {
-                AssetId = asset.AssetId,
-                Title = asset.Title,
-                Description = asset.Description,
-                AssetTypeName = dbContext.AssetTypes
-                    .Where(assetType => assetType.AssetTypeId == asset.AssetTypeId)
-                    .Select(assetType => assetType.Name)
-                    .First(),
-                DomainName = dbContext.BusinessDomains
-                    .Where(domain => domain.DomainId == asset.DomainId)
-                    .Select(domain => domain.Name)
-                    .First(),
-                Tools = dbContext.AssetTools
-                    .Where(assetTool => assetTool.AssetId == asset.AssetId)
-                    .Join(dbContext.Tools, assetTool => assetTool.ToolId, tool => tool.ToolId, (assetTool, tool) => tool.Name)
-                    .ToList(),
-                AuthorDisplayName = dbContext.Users
-                    .Where(user => user.UserId == asset.AuthorId)
-                    .Select(user => user.DisplayName)
-                    .First(),
-                CreatedAt = asset.CreatedAt,
-                UpdatedAt = asset.UpdatedAt,
-                ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId),
-                CommentCount = dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null),
-                IsBookmarked = dbContext.Bookmarks.Any(bookmark => bookmark.AssetId == asset.AssetId && bookmark.UserId == userId)
-            })
-            .ToListAsync(cancellationToken);
+            .Take(limit);
+
+        return await SelectAssetSummaries(recentlyUpdatedAssets, userId).ToListAsync(cancellationToken);
     }
 
     // Bookmarks are a stronger intent signal than likes; domain match matters more than exact type match.
@@ -111,7 +90,7 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
             .Join(dbContext.Assets, bookmark => bookmark.AssetId, bookmarkedAsset => bookmarkedAsset.AssetId,
                 (bookmark, bookmarkedAsset) => new { bookmarkedAsset.DomainId, bookmarkedAsset.AssetTypeId });
 
-        return await dbContext.Assets
+        var recommendedAssets = dbContext.Assets
             .AsNoTracking()
             .Where(asset => asset.AuthorId != userId)
             .Where(asset => !dbContext.Reactions.Any(reaction =>
@@ -124,76 +103,24 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
                     + (bookmarkedAssetAffinities.Count(affinity => affinity.AssetTypeId == asset.AssetTypeId) * BookmarkWeight)) * TypeMatchWeight)
             .ThenByDescending(asset => dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId))
             .ThenByDescending(asset => asset.CreatedAt)
-            .Take(limit)
-            .Select(asset => new AssetSummaryDto
-            {
-                AssetId = asset.AssetId,
-                Title = asset.Title,
-                Description = asset.Description,
-                AssetTypeName = dbContext.AssetTypes
-                    .Where(assetType => assetType.AssetTypeId == asset.AssetTypeId)
-                    .Select(assetType => assetType.Name)
-                    .First(),
-                DomainName = dbContext.BusinessDomains
-                    .Where(domain => domain.DomainId == asset.DomainId)
-                    .Select(domain => domain.Name)
-                    .First(),
-                Tools = dbContext.AssetTools
-                    .Where(assetTool => assetTool.AssetId == asset.AssetId)
-                    .Join(dbContext.Tools, assetTool => assetTool.ToolId, tool => tool.ToolId, (assetTool, tool) => tool.Name)
-                    .ToList(),
-                AuthorDisplayName = dbContext.Users
-                    .Where(user => user.UserId == asset.AuthorId)
-                    .Select(user => user.DisplayName)
-                    .First(),
-                CreatedAt = asset.CreatedAt,
-                UpdatedAt = asset.UpdatedAt,
-                ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId),
-                CommentCount = dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null),
-                // Already-liked/bookmarked assets are excluded above, so this is always false here.
-                IsBookmarked = false
-            })
-            .ToListAsync(cancellationToken);
+            .Take(limit);
+
+        // Already-liked/bookmarked assets are excluded above, so the shared projection's IsBookmarked is always false here.
+        return await SelectAssetSummaries(recommendedAssets, userId).ToListAsync(cancellationToken);
     }
 
     public async Task<IReadOnlyList<AssetSummaryDto>> GetPopularAcrossTeamsAsync(Guid userId, int limit, CancellationToken cancellationToken)
     {
-        return await dbContext.Assets
+        var popularAssets = dbContext.Assets
             .AsNoTracking()
             .OrderByDescending(asset =>
                 dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId && reaction.ReactionType == ReactionTypeConstants.Like)
                 + dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null)
                 + dbContext.Bookmarks.Count(bookmark => bookmark.AssetId == asset.AssetId))
             .ThenByDescending(asset => asset.CreatedAt)
-            .Take(limit)
-            .Select(asset => new AssetSummaryDto
-            {
-                AssetId = asset.AssetId,
-                Title = asset.Title,
-                Description = asset.Description,
-                AssetTypeName = dbContext.AssetTypes
-                    .Where(assetType => assetType.AssetTypeId == asset.AssetTypeId)
-                    .Select(assetType => assetType.Name)
-                    .First(),
-                DomainName = dbContext.BusinessDomains
-                    .Where(domain => domain.DomainId == asset.DomainId)
-                    .Select(domain => domain.Name)
-                    .First(),
-                Tools = dbContext.AssetTools
-                    .Where(assetTool => assetTool.AssetId == asset.AssetId)
-                    .Join(dbContext.Tools, assetTool => assetTool.ToolId, tool => tool.ToolId, (assetTool, tool) => tool.Name)
-                    .ToList(),
-                AuthorDisplayName = dbContext.Users
-                    .Where(user => user.UserId == asset.AuthorId)
-                    .Select(user => user.DisplayName)
-                    .First(),
-                CreatedAt = asset.CreatedAt,
-                UpdatedAt = asset.UpdatedAt,
-                ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId),
-                CommentCount = dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null),
-                IsBookmarked = dbContext.Bookmarks.Any(bookmark => bookmark.AssetId == asset.AssetId && bookmark.UserId == userId)
-            })
-            .ToListAsync(cancellationToken);
+            .Take(limit);
+
+        return await SelectAssetSummaries(popularAssets, userId).ToListAsync(cancellationToken);
     }
 
     public Task AddAsync(Asset asset, CancellationToken cancellationToken) => throw new NotImplementedException();
