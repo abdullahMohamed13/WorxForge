@@ -72,12 +72,6 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
         return await SelectAssetSummaries(recentlyUpdatedAssets, userId).ToListAsync(cancellationToken);
     }
 
-    // Bookmarks are a stronger intent signal than likes; domain match matters more than exact type match.
-    private const int LikeWeight = 1;
-    private const int BookmarkWeight = 2;
-    private const int DomainMatchWeight = 3;
-    private const int TypeMatchWeight = 1;
-
     public async Task<IReadOnlyList<AssetSummaryDto>> GetRecommendedForYouAsync(Guid userId, int limit, CancellationToken cancellationToken)
     {
         var likedAssetAffinities = dbContext.Reactions
@@ -97,10 +91,10 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
                 reaction.AssetId == asset.AssetId && reaction.UserId == userId && reaction.ReactionType == ReactionTypeConstants.Like))
             .Where(asset => !dbContext.Bookmarks.Any(bookmark => bookmark.AssetId == asset.AssetId && bookmark.UserId == userId))
             .OrderByDescending(asset =>
-                ((likedAssetAffinities.Count(affinity => affinity.DomainId == asset.DomainId) * LikeWeight)
-                    + (bookmarkedAssetAffinities.Count(affinity => affinity.DomainId == asset.DomainId) * BookmarkWeight)) * DomainMatchWeight
-                + ((likedAssetAffinities.Count(affinity => affinity.AssetTypeId == asset.AssetTypeId) * LikeWeight)
-                    + (bookmarkedAssetAffinities.Count(affinity => affinity.AssetTypeId == asset.AssetTypeId) * BookmarkWeight)) * TypeMatchWeight)
+                ((likedAssetAffinities.Count(affinity => affinity.DomainId == asset.DomainId) * AssetRecommendationConstants.LikeWeight)
+                    + (bookmarkedAssetAffinities.Count(affinity => affinity.DomainId == asset.DomainId) * AssetRecommendationConstants.BookmarkWeight)) * AssetRecommendationConstants.DomainMatchWeight
+                + ((likedAssetAffinities.Count(affinity => affinity.AssetTypeId == asset.AssetTypeId) * AssetRecommendationConstants.LikeWeight)
+                    + (bookmarkedAssetAffinities.Count(affinity => affinity.AssetTypeId == asset.AssetTypeId) * AssetRecommendationConstants.BookmarkWeight)) * AssetRecommendationConstants.TypeMatchWeight)
             .ThenByDescending(asset => dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId))
             .ThenByDescending(asset => asset.CreatedAt)
             .Take(limit);
