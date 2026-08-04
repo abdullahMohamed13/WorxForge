@@ -4,6 +4,7 @@ using WorxForge.API.Configuration;
 using WorxForge.API.Extensions;
 using WorxForge.Core.Configuration;
 using WorxForge.Infrastructure.Configuration;
+using WorxForge.Infrastructure.Persistence.Seed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,8 @@ builder.Services.AddWorxForgeCore();
 builder.Services.AddWorxForgeInfrastructure(builder.Configuration);
 
 var app = builder.Build();
+
+await app.Services.SeedWorxForgeDataAsync();
 
 app.UseWorxForgePipeline();
 app.MapWorxForgeEndpoints();
