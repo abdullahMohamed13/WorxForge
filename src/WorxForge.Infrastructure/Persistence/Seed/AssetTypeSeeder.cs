@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using WorxForge.Domain.Constants;
 using WorxForge.Domain.Entities;
 using WorxForge.Infrastructure.Configuration;
 
@@ -6,18 +7,6 @@ namespace WorxForge.Infrastructure.Persistence.Seed;
 
 public sealed class AssetTypeSeeder : IDataSeeder
 {
-    private static readonly string[] Names =
-    [
-        "Prompt",
-        "Skill",
-        "Agent",
-        "Agent instruction",
-        "Workflow",
-        "Coding standard",
-        "Template",
-        "Other"
-    ];
-
     public async Task SeedAsync(WorxForgeDbContext context, CancellationToken cancellationToken = default)
     {
         if (await context.AssetTypes.AnyAsync(cancellationToken))
@@ -25,7 +14,7 @@ public sealed class AssetTypeSeeder : IDataSeeder
             return;
         }
 
-        var assetTypes = Names.Select(name => new AssetType { AssetTypeId = Guid.NewGuid(), Name = name });
+        var assetTypes = AssetTypeConstants.All.Select(entry => new AssetType { AssetTypeId = entry.Id, Name = entry.Name });
         await context.AssetTypes.AddRangeAsync(assetTypes, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
     }
