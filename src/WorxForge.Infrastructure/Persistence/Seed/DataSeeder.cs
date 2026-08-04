@@ -23,14 +23,18 @@ public static class DataSeeder
 
         foreach (var seeder in Seeders)
         {
+            var seederName = seeder.GetType().Name;
+            logger.LogInformation("Running {Seeder}", seederName);
+
             try
             {
-                await seeder.SeedAsync(context, cancellationToken);
+                var insertedCount = await seeder.SeedAsync(context, cancellationToken);
+                logger.LogInformation("{Seeder} completed, inserted {InsertedCount} row(s)", seederName, insertedCount);
             }
             catch (Exception ex)
             {
                 // Seeding is best-effort; a failure here must not prevent the app from starting.
-                logger.LogError(ex, "{Seeder} failed to seed lookup data", seeder.GetType().Name);
+                logger.LogError(ex, "{Seeder} failed to seed lookup data", seederName);
             }
         }
     }

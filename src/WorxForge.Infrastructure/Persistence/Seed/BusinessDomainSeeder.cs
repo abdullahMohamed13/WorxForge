@@ -7,15 +7,17 @@ namespace WorxForge.Infrastructure.Persistence.Seed;
 
 public sealed class BusinessDomainSeeder : IDataSeeder
 {
-    public async Task SeedAsync(WorxForgeDbContext context, CancellationToken cancellationToken = default)
+    public async Task<int> SeedAsync(WorxForgeDbContext context, CancellationToken cancellationToken = default)
     {
         var existingIds = await context.BusinessDomains.Select(domain => domain.DomainId).ToHashSetAsync(cancellationToken);
 
         var missingDomains = BusinessDomainConstants.All
             .Where(entry => !existingIds.Contains(entry.Id))
-            .Select(entry => new BusinessDomain { DomainId = entry.Id, Name = entry.Name });
+            .Select(entry => new BusinessDomain { DomainId = entry.Id, Name = entry.Name })
+            .ToList();
 
         await context.BusinessDomains.AddRangeAsync(missingDomains, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
+        return missingDomains.Count;
     }
 }

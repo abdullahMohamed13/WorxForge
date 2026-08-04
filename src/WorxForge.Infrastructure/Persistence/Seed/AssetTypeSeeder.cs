@@ -7,15 +7,17 @@ namespace WorxForge.Infrastructure.Persistence.Seed;
 
 public sealed class AssetTypeSeeder : IDataSeeder
 {
-    public async Task SeedAsync(WorxForgeDbContext context, CancellationToken cancellationToken = default)
+    public async Task<int> SeedAsync(WorxForgeDbContext context, CancellationToken cancellationToken = default)
     {
         var existingIds = await context.AssetTypes.Select(assetType => assetType.AssetTypeId).ToHashSetAsync(cancellationToken);
 
         var missingAssetTypes = AssetTypeConstants.All
             .Where(entry => !existingIds.Contains(entry.Id))
-            .Select(entry => new AssetType { AssetTypeId = entry.Id, Name = entry.Name });
+            .Select(entry => new AssetType { AssetTypeId = entry.Id, Name = entry.Name })
+            .ToList();
 
         await context.AssetTypes.AddRangeAsync(missingAssetTypes, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
+        return missingAssetTypes.Count;
     }
 }
