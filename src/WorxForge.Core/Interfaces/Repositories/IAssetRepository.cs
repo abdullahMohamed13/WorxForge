@@ -12,6 +12,7 @@ public interface IAssetRepository
     Task<(IReadOnlyList<AssetSummaryDto> Items, int Total)> GetByOwnerAsync(Guid userId, int page, int pageSize, string? sortBy, CancellationToken cancellationToken);
     Task<IReadOnlyList<AssetSummaryDto>> GetFeaturedAsync(int limit, CancellationToken cancellationToken);
     Task<IReadOnlyList<AssetSummaryDto>> GetTrendingAsync(int limit, CancellationToken cancellationToken);
+    Task<IReadOnlyList<AssetSummaryDto>> GetUsefulThisWeekAsync(Guid userId, int limit, CancellationToken cancellationToken);
     Task AddAsync(Asset asset, CancellationToken cancellationToken);
     Task UpdateAsync(Asset asset, CancellationToken cancellationToken);
     Task DeleteAsync(Guid assetId, CancellationToken cancellationToken);

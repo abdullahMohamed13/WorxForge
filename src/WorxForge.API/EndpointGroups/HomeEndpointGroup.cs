@@ -13,7 +13,7 @@ public static class HomeEndpointGroup
         group.MapGet("/dashboard", GetHomeDashboardAsync)
             .WithName("GetHomeDashboard")
             .WithSummary("Get the personalized Home dashboard")
-            .WithDescription("Returns the authenticated user's Home dashboard, including recommendations, featured/trending assets, recently accessed assets, announcements, and domains to browse.")
+            .WithDescription("Returns the authenticated user's Home dashboard, including useful this week, recently updated, recommended for you, popular across teams, and domain summaries.")
             .Produces<HomeDashboardDto>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized);
         return group;

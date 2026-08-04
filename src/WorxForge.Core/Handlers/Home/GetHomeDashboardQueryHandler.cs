@@ -5,16 +5,20 @@ using WorxForge.Domain.Queries.Home;
 
 namespace WorxForge.Core.Handlers.Home;
 
-public sealed class GetHomeDashboardQueryHandler(IBusinessDomainRepository businessDomainRepository)
+public sealed class GetHomeDashboardQueryHandler(IBusinessDomainRepository businessDomainRepository, IAssetRepository assetRepository)
     : IQueryHandler<GetHomeDashboardQuery, HomeDashboardDto>
 {
+    private const int UsefulThisWeekLimit = 4;
+
     public async Task<HomeDashboardDto> HandleAsync(GetHomeDashboardQuery query, CancellationToken cancellationToken)
     {
         var domainSummaries = await businessDomainRepository.GetDomainSummariesAsync(cancellationToken);
+        var usefulThisWeek = await assetRepository.GetUsefulThisWeekAsync(query.UserId, UsefulThisWeekLimit, cancellationToken);
 
         return new HomeDashboardDto
         {
-            DomainSummaries = domainSummaries
+            DomainSummaries = domainSummaries,
+            UsefulThisWeek = usefulThisWeek
         };
     }
 }
