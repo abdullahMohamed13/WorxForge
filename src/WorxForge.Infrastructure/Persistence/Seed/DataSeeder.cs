@@ -1,4 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using WorxForge.Infrastructure.Configuration;
 
 namespace WorxForge.Infrastructure.Persistence.Seed;
@@ -18,10 +19,19 @@ public static class DataSeeder
     {
         using var scope = services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<WorxForgeDbContext>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<IDataSeeder>>();
 
         foreach (var seeder in Seeders)
         {
-            await seeder.SeedAsync(context, cancellationToken);
+            try
+            {
+                await seeder.SeedAsync(context, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                // Seeding is best-effort; a failure here must not prevent the app from starting.
+                logger.LogError(ex, "{Seeder} failed to seed lookup data", seeder.GetType().Name);
+            }
         }
     }
 }

@@ -9,13 +9,13 @@ public sealed class UseCaseSeeder : IDataSeeder
 {
     public async Task SeedAsync(WorxForgeDbContext context, CancellationToken cancellationToken = default)
     {
-        if (await context.UseCases.AnyAsync(cancellationToken))
-        {
-            return;
-        }
+        var existingIds = await context.UseCases.Select(useCase => useCase.UseCaseId).ToHashSetAsync(cancellationToken);
 
-        var useCases = UseCaseConstants.All.Select(entry => new UseCase { UseCaseId = entry.Id, Name = entry.Name });
-        await context.UseCases.AddRangeAsync(useCases, cancellationToken);
+        var missingUseCases = UseCaseConstants.All
+            .Where(entry => !existingIds.Contains(entry.Id))
+            .Select(entry => new UseCase { UseCaseId = entry.Id, Name = entry.Name });
+
+        await context.UseCases.AddRangeAsync(missingUseCases, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
     }
 }

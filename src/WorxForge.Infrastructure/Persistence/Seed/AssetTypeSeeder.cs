@@ -9,13 +9,13 @@ public sealed class AssetTypeSeeder : IDataSeeder
 {
     public async Task SeedAsync(WorxForgeDbContext context, CancellationToken cancellationToken = default)
     {
-        if (await context.AssetTypes.AnyAsync(cancellationToken))
-        {
-            return;
-        }
+        var existingIds = await context.AssetTypes.Select(assetType => assetType.AssetTypeId).ToHashSetAsync(cancellationToken);
 
-        var assetTypes = AssetTypeConstants.All.Select(entry => new AssetType { AssetTypeId = entry.Id, Name = entry.Name });
-        await context.AssetTypes.AddRangeAsync(assetTypes, cancellationToken);
+        var missingAssetTypes = AssetTypeConstants.All
+            .Where(entry => !existingIds.Contains(entry.Id))
+            .Select(entry => new AssetType { AssetTypeId = entry.Id, Name = entry.Name });
+
+        await context.AssetTypes.AddRangeAsync(missingAssetTypes, cancellationToken);
         await context.SaveChangesAsync(cancellationToken);
     }
 }
