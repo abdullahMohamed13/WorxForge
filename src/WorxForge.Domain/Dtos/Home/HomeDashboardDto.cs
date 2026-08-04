@@ -10,5 +10,6 @@ public sealed class HomeDashboardDto
     public IReadOnlyList<AssetSummaryDto> Trending { get; init; } = [];
     public IReadOnlyList<AssetSummaryDto> RecentlyAccessed { get; init; } = [];
     public IReadOnlyList<string> Announcements { get; init; } = [];
+    public IReadOnlyList<DomainSummaryDto> DomainSummaries { get; init; } = [];
 }
 

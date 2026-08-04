@@ -1,12 +1,20 @@
 ﻿using WorxForge.Core.Abstractions;
+using WorxForge.Core.Interfaces.Repositories;
+using WorxForge.Domain.Dtos.Home;
 using WorxForge.Domain.Queries.Home;
 
 namespace WorxForge.Core.Handlers.Home;
 
-public sealed class GetHomeDashboardQueryHandler : IQueryHandler<GetHomeDashboardQuery, WorxForge.Domain.Dtos.Home.HomeDashboardDto>
+public sealed class GetHomeDashboardQueryHandler(IBusinessDomainRepository businessDomainRepository)
+    : IQueryHandler<GetHomeDashboardQuery, HomeDashboardDto>
 {
-    public Task<WorxForge.Domain.Dtos.Home.HomeDashboardDto> HandleAsync(GetHomeDashboardQuery query, CancellationToken cancellationToken)
+    public async Task<HomeDashboardDto> HandleAsync(GetHomeDashboardQuery query, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var domainSummaries = await businessDomainRepository.GetDomainSummariesAsync(cancellationToken);
+
+        return new HomeDashboardDto
+        {
+            DomainSummaries = domainSummaries
+        };
     }
 }
