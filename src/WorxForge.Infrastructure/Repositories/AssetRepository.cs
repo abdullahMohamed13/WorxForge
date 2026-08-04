@@ -57,6 +57,42 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<AssetSummaryDto>> GetRecentlyUpdatedAsync(Guid userId, int limit, CancellationToken cancellationToken)
+    {
+        return await dbContext.Assets
+            .AsNoTracking()
+            .OrderByDescending(asset => asset.UpdatedAt)
+            .Take(limit)
+            .Select(asset => new AssetSummaryDto
+            {
+                AssetId = asset.AssetId,
+                Title = asset.Title,
+                Description = asset.Description,
+                AssetTypeName = dbContext.AssetTypes
+                    .Where(assetType => assetType.AssetTypeId == asset.AssetTypeId)
+                    .Select(assetType => assetType.Name)
+                    .First(),
+                DomainName = dbContext.BusinessDomains
+                    .Where(domain => domain.DomainId == asset.DomainId)
+                    .Select(domain => domain.Name)
+                    .First(),
+                Tools = dbContext.AssetTools
+                    .Where(assetTool => assetTool.AssetId == asset.AssetId)
+                    .Join(dbContext.Tools, assetTool => assetTool.ToolId, tool => tool.ToolId, (assetTool, tool) => tool.Name)
+                    .ToList(),
+                AuthorDisplayName = dbContext.Users
+                    .Where(user => user.UserId == asset.AuthorId)
+                    .Select(user => user.DisplayName)
+                    .First(),
+                CreatedAt = asset.CreatedAt,
+                UpdatedAt = asset.UpdatedAt,
+                ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId),
+                CommentCount = dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null),
+                IsBookmarked = dbContext.Bookmarks.Any(bookmark => bookmark.AssetId == asset.AssetId && bookmark.UserId == userId)
+            })
+            .ToListAsync(cancellationToken);
+    }
+
     public Task AddAsync(Asset asset, CancellationToken cancellationToken) => throw new NotImplementedException();
     public Task UpdateAsync(Asset asset, CancellationToken cancellationToken) => throw new NotImplementedException();
     public Task DeleteAsync(Guid assetId, CancellationToken cancellationToken) => throw new NotImplementedException();
