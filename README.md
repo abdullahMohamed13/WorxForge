@@ -15,8 +15,7 @@ Frontend application for the WorxForge platform, built with React, TypeScript, a
 ├── docs/
 │   ├── requirements/
 │   └── archive/
-└── src/
-    └── worxforge-web/
+└── worxforge-web/
 ```
 
 ## Prerequisites
@@ -49,14 +48,14 @@ The setup scripts:
 ## Run locally
 
 ```powershell
-cd .\src\worxforge-web
+cd .\worxforge-web
 npm run dev
 ```
 
 ## Build
 
 ```powershell
-cd .\src\worxforge-web
+cd .\worxforge-web
 npm run build
 ```
 

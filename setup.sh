@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-FRONTEND_DIR="$SCRIPT_DIR/src/worxforge-web"
+FRONTEND_DIR="$SCRIPT_DIR/worxforge-web"
 
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
