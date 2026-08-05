@@ -15,7 +15,7 @@ export function BookmarkButton({ assetId, isBookmarked, onToggle }: BookmarkButt
       onClick={() => onToggle?.(assetId, !isBookmarked)}
       className="shrink-0 rounded-full p-1.5 text-secondary transition-colors hover:bg-primary/10 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     >
-      <BookmarkIcon filled={isBookmarked} className="size-5" />
+      <BookmarkIcon filled={isBookmarked} className="size-4" />
     </button>
   );
 }

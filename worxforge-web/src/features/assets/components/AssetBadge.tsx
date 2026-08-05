@@ -13,7 +13,7 @@ const VARIANT_CLASSES: Record<AssetBadgeVariant, string> = {
 export function AssetBadge({ label, variant = "primary" }: AssetBadgeProps) {
   return (
     <span
-      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${VARIANT_CLASSES[variant]}`}
+      className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] leading-4 font-medium ${VARIANT_CLASSES[variant]}`}
     >
       {label}
     </span>
