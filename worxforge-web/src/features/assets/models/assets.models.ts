@@ -4,7 +4,7 @@
   description?: string;
   assetTypeName: string;
   domainName: string;
-  tags: string[];
+  tools: string[];
   authorDisplayName: string;
   createdAt: string;
   updatedAt: string;
