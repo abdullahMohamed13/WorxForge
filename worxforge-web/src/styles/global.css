@@ -145,9 +145,104 @@
   }
 }
 
+@keyframes wf-brand-transfer-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  65% {
+    opacity: 0.25;
+    transform: translateX(-28px) scale(0.94);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-48px) scale(0.9);
+  }
+}
+
+@keyframes wf-brand-transfer-in {
+  0% {
+    opacity: 0;
+    transform: translateX(44px) scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes wf-brand-transfer-out-right {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  65% {
+    opacity: 0.25;
+    transform: translateX(28px) scale(0.94);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(48px) scale(0.9);
+  }
+}
+
+@keyframes wf-brand-transfer-in-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-44px) scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes wf-brand-logo-pop-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.35);
+  }
+
+  68% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @layer components {
   .wf-sidebar-item-enter {
     animation: wf-sidebar-reveal 420ms ease-out forwards;
+  }
+
+  .wf-brand-transfer-out {
+    animation: wf-brand-transfer-out 700ms ease-in-out forwards;
+  }
+
+  .wf-brand-transfer-in {
+    animation: wf-brand-transfer-in 700ms ease-in-out both;
+  }
+
+  .wf-brand-transfer-out-right {
+    animation: wf-brand-transfer-out-right 700ms ease-in-out forwards;
+  }
+
+  .wf-brand-transfer-in-left {
+    animation: wf-brand-transfer-in-left 700ms ease-in-out both;
+  }
+
+  .wf-brand-logo-pop-in {
+    animation: wf-brand-logo-pop-in 700ms cubic-bezier(0.2, 0.75, 0.25, 1) both;
   }
 
   .wf-rainbow-active {
@@ -204,6 +299,16 @@
   .wf-rainbow-active::after {
     animation: none !important;
     background-position: 50% 50%;
+  }
+
+  .wf-brand-transfer-out,
+  .wf-brand-transfer-in,
+  .wf-brand-transfer-out-right,
+  .wf-brand-transfer-in-left,
+  .wf-brand-logo-pop-in {
+    animation: none !important;
+    transform: none;
+    opacity: 1;
   }
 }
 

@@ -1,15 +1,22 @@
 import type { RefObject } from "react";
 import { useId } from "react";
-import { Shapes, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { APP_NAME } from "../constants/app.constants";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { cn } from "../lib/utils";
 import { navigationItems, type NavigationItem } from "../navigation/navigation.config";
+import { Logo } from "../layouts/components/Logo";
 
 type AppSidebarProps = {
   collapsed?: boolean;
   isMobile?: boolean;
   animateSequence?: boolean;
+  hideDesktopBrand?: boolean;
+  animateDesktopBrandIn?: boolean;
+  animateDesktopBrandOut?: boolean;
+  animateDesktopBrandLabelOut?: boolean;
+  forceShowDesktopBrandLabel?: boolean;
   mobileCloseButtonRef?: RefObject<HTMLButtonElement | null>;
   onCloseMobile?: () => void;
   onNavigate?: () => void;
@@ -114,6 +121,11 @@ export function AppSidebar({
   collapsed = false,
   isMobile = false,
   animateSequence = false,
+  hideDesktopBrand = false,
+  animateDesktopBrandIn = false,
+  animateDesktopBrandOut = false,
+  animateDesktopBrandLabelOut = false,
+  forceShowDesktopBrandLabel = false,
   mobileCloseButtonRef,
   onCloseMobile,
   onNavigate
@@ -122,6 +134,8 @@ export function AppSidebar({
   const primaryLabelId = useId();
   const accountLabelId = useId();
   const isCollapsed = !isMobile && collapsed;
+  const shouldHideBrand = !isMobile && hideDesktopBrand;
+  const showDesktopBrandLabel = !isCollapsed || forceShowDesktopBrandLabel;
   const shouldAnimateSequence = animateSequence && !isCollapsed;
   const primaryBaseDelay = 320;
   const accountHeadingDelay = primaryBaseDelay + (primaryNavigationItems.length * 130) + 160;
@@ -137,28 +151,35 @@ export function AppSidebar({
         isCollapsed ? "w-20" : "w-64"
       )}
     >
-      <div className="flex items-center justify-between gap-3 border-b border-sidebar-border px-4 py-4">
+      <div className="flex h-16 items-center justify-between gap-3 border-b border-sidebar-border px-4">
         <div
           className={cn("flex min-w-0 items-center gap-3", isCollapsed && "justify-center", shouldAnimateSequence && "wf-sidebar-item-enter motion-safe:opacity-0")}
           style={shouldAnimateSequence ? { animationDelay: "40ms" } : undefined}
         >
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-sidebar-primary text-sidebar-primary-foreground shadow-sm transition-transform motion-safe:duration-250 motion-safe:ease-out motion-reduce:transition-none">
-            <Shapes aria-hidden="true" className="size-5" />
-          </div>
           <div
             className={cn(
-              "min-w-0 overflow-hidden transition-[opacity,max-width,transform] motion-safe:duration-220 motion-safe:ease-out motion-reduce:transition-none",
-              isCollapsed
-                ? "max-w-0 opacity-0 -translate-y-1 scale-[0.985]"
-                : "max-w-[9rem] opacity-100 translate-y-0 scale-100"
+              "flex min-w-0 items-center gap-3 transition-[opacity,transform] motion-safe:duration-700 motion-safe:ease-in-out motion-reduce:transition-none",
+              shouldHideBrand ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0",
+              animateDesktopBrandIn && "wf-brand-transfer-in",
+              animateDesktopBrandOut && "wf-brand-transfer-out-right"
             )}
           >
-            {!isCollapsed ? (
-              <>
-              <p className="truncate text-sm font-semibold tracking-tight">WorxForge</p>
-              <p className="truncate text-xs text-sidebar-foreground/65">Creator workspace</p>
-              </>
-            ) : null}
+            <Logo className="size-8 shrink-0" />
+            <div
+              className={cn(
+                "min-w-0 overflow-hidden transition-[opacity,max-width,transform] motion-safe:duration-700 motion-safe:ease-in-out motion-reduce:transition-none",
+                showDesktopBrandLabel
+                  ? "max-w-[12rem] opacity-100 translate-x-0"
+                  : "max-w-0 opacity-0 translate-x-10",
+                animateDesktopBrandLabelOut && "wf-brand-transfer-out-right"
+              )}
+            >
+              {showDesktopBrandLabel ? (
+                <>
+                <p className="truncate text-lg font-semibold text-text">{APP_NAME}</p>
+                </>
+              ) : null}
+            </div>
           </div>
         </div>
         {isMobile ? (

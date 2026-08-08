@@ -7,11 +7,15 @@ import { APP_NAME } from "../../constants/app.constants";
 import { cn } from "../../lib/utils";
 import { Logo } from "./Logo";
 
-type HeaderBrandMode = "full" | "nameOnly";
+type HeaderBrandMode = "full" | "nameOnly" | "hidden";
 
 type HeaderProps = {
   brandMode?: HeaderBrandMode;
   brandOffsetClassName?: string;
+  transferToSidebar?: boolean;
+  transferFromSidebar?: boolean;
+  synchronizeLogoReveal?: boolean;
+  popLogo?: boolean;
 };
 
 function getInitials(displayName: string): string {
@@ -23,33 +27,49 @@ function getInitials(displayName: string): string {
     .join("");
 }
 
-export function Header({ brandMode = "full", brandOffsetClassName }: HeaderProps) {
+export function Header({
+  brandMode = "full",
+  brandOffsetClassName,
+  transferToSidebar = false,
+  transferFromSidebar = false,
+  synchronizeLogoReveal = false,
+  popLogo = false
+}: HeaderProps) {
   const { user } = useAuthContext();
   const { unreadCount } = useNotificationContext();
   const showLogo = brandMode === "full";
+  const showBrand = brandMode !== "hidden";
 
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-4 border-b border-border bg-background px-4 sm:px-6">
       <Link
         to={ROUTES.HOME}
         className={cn(
-          "flex items-center gap-0 text-text transition-[margin-left] motion-safe:duration-300 motion-safe:ease-in-out motion-reduce:transition-none",
+          "origin-left flex items-center gap-0 overflow-hidden text-text transition-[margin-left,max-width,opacity,transform] motion-safe:duration-700 motion-safe:ease-in-out motion-reduce:transition-none",
+          showBrand ? "max-w-[16rem] opacity-100 translate-x-0" : "pointer-events-none max-w-0 opacity-0 -translate-x-10",
+          transferToSidebar && "wf-brand-transfer-out",
+          transferFromSidebar && "wf-brand-transfer-in-left",
           brandOffsetClassName
         )}
+        aria-hidden={!showBrand}
+        tabIndex={showBrand ? undefined : -1}
       >
         <span
           className={cn(
-            "inline-flex items-center overflow-hidden transition-[max-width,opacity,margin-right] motion-safe:duration-220 motion-safe:ease-in-out motion-reduce:transition-none",
-            showLogo ? "max-w-8 opacity-100 mr-2" : "pointer-events-none max-w-0 opacity-0 mr-0"
+            "inline-flex items-center overflow-hidden transition-[max-width,opacity,margin-right,transform] motion-safe:duration-650 motion-safe:ease-in-out motion-reduce:transition-none",
+            showLogo ? "max-w-8 opacity-100 mr-2" : "pointer-events-none max-w-0 opacity-0 mr-0",
+            popLogo && "wf-brand-logo-pop-in"
           )}
-          style={{ transitionDelay: showLogo ? "160ms" : "0ms" }}
+          style={{
+            transitionDelay: showLogo && !synchronizeLogoReveal ? "220ms" : "0ms"
+          }}
           aria-hidden={!showLogo}
         >
           <Logo className="size-8" />
         </span>
         <span
           className={cn(
-            "text-lg font-semibold text-text transition-transform motion-safe:duration-300 motion-safe:ease-in-out motion-reduce:transition-none",
+            "text-lg font-semibold text-text transition-transform motion-safe:duration-700 motion-safe:ease-in-out motion-reduce:transition-none",
             showLogo ? "translate-x-0" : "-translate-x-0.5"
           )}
         >

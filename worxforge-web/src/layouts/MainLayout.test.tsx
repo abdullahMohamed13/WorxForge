@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { describe, expect, it } from "vitest";
@@ -24,6 +24,17 @@ function renderLayout(initialPath: string) {
   );
 }
 
+async function waitForSidebarToggle(name: string): Promise<HTMLButtonElement> {
+  let toggle: HTMLButtonElement | null = null;
+
+  await waitFor(() => {
+    toggle = screen.getByRole("button", { name }) as HTMLButtonElement;
+    expect(toggle.disabled).toBe(false);
+  }, { timeout: 3000 });
+
+  return toggle!;
+}
+
 describe("MainLayout", () => {
   it("cycles desktop sidebar states with one unified toggle", async () => {
     const user = userEvent.setup();
@@ -33,14 +44,14 @@ describe("MainLayout", () => {
     const desktopToggle = screen.getByRole("button", { name: "Open sidebar" });
 
     await user.click(desktopToggle);
-    expect(screen.getByRole("button", { name: "Collapse sidebar" })).not.toBeNull();
+    const collapseToggle = await waitForSidebarToggle("Collapse sidebar");
 
-    await user.click(screen.getByRole("button", { name: "Collapse sidebar" }));
-    expect(screen.getByRole("button", { name: "Close sidebar" })).not.toBeNull();
+    await user.click(collapseToggle);
+    const closeToggle = await waitForSidebarToggle("Close sidebar");
 
-    await user.click(screen.getByRole("button", { name: "Close sidebar" }));
-    expect(screen.getByRole("button", { name: "Open sidebar" })).not.toBeNull();
-  });
+    await user.click(closeToggle);
+    expect(await waitForSidebarToggle("Open sidebar")).not.toBeNull();
+  }, 10000);
 
   it("activates Publish Asset without also activating My Assets on the create route", async () => {
     const user = userEvent.setup();
@@ -48,6 +59,7 @@ describe("MainLayout", () => {
     renderLayout(ROUTES.MY_ASSETS_CREATE);
 
     await user.click(screen.getByRole("button", { name: "Open sidebar" }));
+    await waitForSidebarToggle("Collapse sidebar");
 
     const publishAssetLink = screen.getByRole("link", { name: "Publish Asset" });
     const myAssetsLink = screen.getByRole("link", { name: "My Assets" });
@@ -62,9 +74,10 @@ describe("MainLayout", () => {
     renderLayout(ROUTES.HOME);
 
     await user.click(screen.getByRole("button", { name: "Open sidebar" }));
-    await user.click(screen.getByRole("button", { name: "Collapse sidebar" }));
+    const collapseToggle = await waitForSidebarToggle("Collapse sidebar");
+    await user.click(collapseToggle);
 
-    expect(screen.getByRole("button", { name: "Close sidebar" })).not.toBeNull();
+    expect(await waitForSidebarToggle("Close sidebar")).not.toBeNull();
     expect(screen.getByRole("link", { name: "Home" }).getAttribute("aria-current")).toBe("page");
   });
 

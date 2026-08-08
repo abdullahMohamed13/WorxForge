@@ -7,6 +7,14 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 
 type DesktopSidebarState = "closed" | "expanded" | "collapsed";
+type BrandTransfer = {
+  kind: "headerToSidebar" | "sidebarToHeader";
+  phase: "out" | "layout" | "in";
+  from: DesktopSidebarState;
+  to: DesktopSidebarState;
+};
+const BRAND_TRANSFER_DURATION_MS = 700;
+const SIDEBAR_LAYOUT_DURATION_MS = 700;
 
 const getNextDesktopSidebarState = (state: DesktopSidebarState): DesktopSidebarState => {
   if (state === "closed") {
@@ -24,30 +32,128 @@ export function MainLayout() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [desktopSidebarState, setDesktopSidebarState] = useState<DesktopSidebarState>("closed");
   const [animateSidebarSequence, setAnimateSidebarSequence] = useState(false);
+  const [brandTransfer, setBrandTransfer] = useState<BrandTransfer | null>(null);
   const location = useLocation();
   const contentRef = useRef<HTMLDivElement>(null);
   const mobileDrawerRef = useRef<HTMLDivElement>(null);
   const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
   const isDesktopSidebarClosed = desktopSidebarState === "closed";
   const isDesktopSidebarCollapsed = desktopSidebarState === "collapsed";
-  const desktopHeaderBrandMode = isDesktopSidebarCollapsed ? "nameOnly" : "full";
-  const desktopHeaderBrandOffsetClassName = isDesktopSidebarClosed
+  const isHeaderToSidebarTransferOut = brandTransfer?.kind === "headerToSidebar" && brandTransfer.phase === "out";
+  const isHeaderToSidebarTransferIn = brandTransfer?.kind === "headerToSidebar" && brandTransfer.phase === "in";
+  const isSidebarToHeaderTransferOut = brandTransfer?.kind === "sidebarToHeader" && brandTransfer.phase === "out";
+  const isSidebarToHeaderTransferIn = brandTransfer?.kind === "sidebarToHeader" && brandTransfer.phase === "in";
+  const isCollapsedToClosedTransfer = brandTransfer?.kind === "sidebarToHeader"
+    && brandTransfer.from === "collapsed"
+    && brandTransfer.to === "closed";
+  const isCollapsedToClosedLayout = isCollapsedToClosedTransfer && brandTransfer?.phase === "layout";
+  const isCollapsedToClosedTransferIn = isCollapsedToClosedTransfer && brandTransfer?.phase === "in";
+  const desktopHeaderBrandMode = isHeaderToSidebarTransferOut
+    ? "full"
+    : isHeaderToSidebarTransferIn
+      ? "hidden"
+      : isCollapsedToClosedTransfer
+        ? brandTransfer?.phase === "out"
+          ? "nameOnly"
+          : "full"
+        : isSidebarToHeaderTransferOut
+          ? "hidden"
+          : isSidebarToHeaderTransferIn
+            ? brandTransfer?.to === "collapsed"
+              ? "nameOnly"
+              : "full"
+            : isDesktopSidebarClosed
+              ? "full"
+              : isDesktopSidebarCollapsed
+                ? "nameOnly"
+                : "hidden";
+  const shouldHideSidebarBrand = isHeaderToSidebarTransferOut
+    || isCollapsedToClosedTransferIn
+    || isCollapsedToClosedLayout;
+  const shouldAnimateSidebarBrandIn = isHeaderToSidebarTransferIn;
+  const shouldAnimateSidebarBrandOut = isSidebarToHeaderTransferOut && brandTransfer?.from === "collapsed";
+  const shouldAnimateSidebarBrandLabelOut = isSidebarToHeaderTransferOut && brandTransfer?.from === "expanded";
+  const shouldForceSidebarBrandLabel = isSidebarToHeaderTransferOut && brandTransfer?.from === "expanded";
+  const desktopHeaderBrandOffsetClassName = isCollapsedToClosedLayout
     ? "ml-14"
-    : isDesktopSidebarCollapsed
-      ? "ml-2.5"
-      : "ml-4";
+    : isCollapsedToClosedTransferIn
+      ? "ml-4"
+      : isSidebarToHeaderTransferIn
+    ? brandTransfer?.to === "closed"
+      ? "ml-14"
+      : brandTransfer?.to === "collapsed"
+        ? "ml-[0.7rem]"
+        : "ml-4"
+    : isDesktopSidebarClosed
+      ? "ml-14"
+      : isDesktopSidebarCollapsed
+        ? "ml-[0.7rem]"
+        : "ml-4";
 
   const handleDesktopSidebarToggle = () => {
+    if (brandTransfer) {
+      return;
+    }
+
     setDesktopSidebarState((currentState) => {
       const nextState = getNextDesktopSidebarState(currentState);
 
-      if (nextState === "expanded") {
-        setAnimateSidebarSequence(true);
+      if (currentState === "closed" && nextState === "expanded") {
+        setBrandTransfer({ kind: "headerToSidebar", phase: "out", from: currentState, to: nextState });
+        return currentState;
+      }
+
+      if ((currentState === "expanded" && nextState === "collapsed") || (currentState === "collapsed" && nextState === "closed")) {
+        setBrandTransfer({ kind: "sidebarToHeader", phase: "out", from: currentState, to: nextState });
+        return currentState;
       }
 
       return nextState;
     });
   };
+
+  useEffect(() => {
+    if (!brandTransfer) {
+      return undefined;
+    }
+
+    const timeoutDuration = brandTransfer.phase === "layout"
+      ? SIDEBAR_LAYOUT_DURATION_MS
+      : BRAND_TRANSFER_DURATION_MS;
+    const timeoutId = window.setTimeout(() => {
+      if (brandTransfer.phase === "out") {
+        if (brandTransfer.to === "expanded") {
+          setAnimateSidebarSequence(true);
+        }
+
+        if (brandTransfer.kind === "sidebarToHeader" && brandTransfer.from === "collapsed" && brandTransfer.to === "closed") {
+          setBrandTransfer({ ...brandTransfer, phase: "in" });
+          return;
+        }
+
+        setDesktopSidebarState(brandTransfer.to);
+        setBrandTransfer({ ...brandTransfer, phase: "in" });
+        return;
+      }
+
+      if (brandTransfer.phase === "in" && brandTransfer.kind === "sidebarToHeader" && brandTransfer.from === "collapsed" && brandTransfer.to === "closed") {
+        setDesktopSidebarState("closed");
+        setBrandTransfer({ ...brandTransfer, phase: "layout" });
+        return;
+      }
+
+      if (brandTransfer.phase === "layout") {
+        setBrandTransfer(null);
+        return;
+      }
+
+      setBrandTransfer(null);
+    }, timeoutDuration);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [brandTransfer]);
 
   useEffect(() => {
     if (!animateSidebarSequence) {
@@ -124,7 +230,8 @@ export function MainLayout() {
       <button
         type="button"
         className={cn(
-          "fixed top-4 z-50 hidden size-11 items-center justify-center rounded-xl border border-border bg-background/95 text-text shadow-sm backdrop-blur-sm transition-[left,background-color,color,transform] motion-safe:duration-300 motion-safe:ease-in-out motion-reduce:transition-none hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] motion-reduce:active:scale-100 lg:inline-flex",
+          "fixed top-2.5 z-50 hidden size-11 items-center justify-center rounded-xl border border-border bg-background/95 text-text shadow-sm backdrop-blur-sm transition-[left,background-color,color,transform] motion-safe:ease-in-out motion-reduce:transition-none hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background active:scale-[0.98] motion-reduce:active:scale-100 lg:inline-flex",
+          isCollapsedToClosedLayout ? "motion-safe:duration-700" : "motion-safe:duration-300",
           isDesktopSidebarClosed
             ? "left-4"
             : isDesktopSidebarCollapsed
@@ -138,6 +245,7 @@ export function MainLayout() {
               ? "Collapse sidebar"
               : "Close sidebar"
         }
+        disabled={Boolean(brandTransfer)}
         onClick={handleDesktopSidebarToggle}
       >
         <span className="relative block size-5">
@@ -174,7 +282,8 @@ export function MainLayout() {
       <div className="flex min-h-screen">
         <div
           className={cn(
-            "relative hidden overflow-hidden lg:block motion-safe:transition-[width] motion-safe:duration-300 motion-safe:ease-in-out motion-reduce:transition-none",
+            "relative hidden overflow-hidden lg:block motion-safe:transition-[width] motion-safe:ease-in-out motion-reduce:transition-none",
+            isCollapsedToClosedLayout ? "motion-safe:duration-700" : "motion-safe:duration-300",
             isDesktopSidebarClosed
               ? "w-0"
               : isDesktopSidebarCollapsed
@@ -186,13 +295,19 @@ export function MainLayout() {
         >
           <div
             className={cn(
-              "h-full motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-in-out motion-reduce:transition-none",
+              "h-full motion-safe:transition-transform motion-safe:ease-in-out motion-reduce:transition-none",
+              isCollapsedToClosedLayout ? "motion-safe:duration-700" : "motion-safe:duration-300",
               isDesktopSidebarClosed ? "-translate-x-full" : "translate-x-0"
             )}
           >
             <AppSidebar
               collapsed={isDesktopSidebarCollapsed}
               animateSequence={animateSidebarSequence}
+              hideDesktopBrand={shouldHideSidebarBrand}
+              animateDesktopBrandIn={shouldAnimateSidebarBrandIn}
+              animateDesktopBrandOut={shouldAnimateSidebarBrandOut}
+              animateDesktopBrandLabelOut={shouldAnimateSidebarBrandLabelOut}
+              forceShowDesktopBrandLabel={shouldForceSidebarBrandLabel}
             />
           </div>
         </div>
@@ -237,6 +352,10 @@ export function MainLayout() {
             <Header
               brandMode={desktopHeaderBrandMode}
               brandOffsetClassName={desktopHeaderBrandOffsetClassName}
+              transferToSidebar={isHeaderToSidebarTransferOut}
+              transferFromSidebar={isSidebarToHeaderTransferIn && !isCollapsedToClosedTransfer}
+              synchronizeLogoReveal={Boolean(isCollapsedToClosedTransferIn)}
+              popLogo={Boolean(isCollapsedToClosedTransferIn)}
             />
           </div>
 
