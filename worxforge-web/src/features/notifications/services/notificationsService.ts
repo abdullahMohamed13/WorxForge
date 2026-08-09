@@ -62,13 +62,11 @@ export function createNotificationsService(baseUrl: string = import.meta.env.VIT
     },
 
     async markAsRead(notificationId, signal) {
-      const userId = requireCurrentUserId();
-      await client.read({ userId, notificationId }, signal);
+      await client.read(notificationId, signal);
     },
 
     async markAllAsRead(signal) {
-      const userId = requireCurrentUserId();
-      await client.readAll({ userId }, signal);
+      await client.readAll(signal);
     }
   };
 }
