@@ -255,7 +255,7 @@ export interface IClient {
      * @param pageSize (optional) 
      * @return OK
      */
-    myAssets(page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<void>;
+    myAssets(page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<AssetSummaryDtoPagedResultDto>;
 
     /**
      * @return OK
@@ -268,12 +268,12 @@ export interface IClient {
      * @param pageSize (optional) 
      * @return OK
      */
-    notifications(isRead: boolean | undefined, page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<void>;
+    notifications(isRead: boolean | undefined, page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<NotificationDtoPagedResultDto>;
 
     /**
      * @return OK
      */
-    unreadCount(signal?: AbortSignal): Promise<void>;
+    unreadCount(signal?: AbortSignal): Promise<UnreadCountDto>;
 
     /**
      * @return OK
@@ -1037,6 +1037,7 @@ export class Client implements IClient {
             method: "GET",
             signal,
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -1050,7 +1051,9 @@ export class Client implements IClient {
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AssetDetailsDto;
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2125,7 +2128,7 @@ export class Client implements IClient {
      * @param pageSize (optional) 
      * @return OK
      */
-    myAssets(page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<void> {
+    myAssets(page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<AssetSummaryDtoPagedResultDto> {
         let url_ = this.baseUrl + "/api/library/my-assets?";
         if (page === null)
             throw new globalThis.Error("The parameter 'page' cannot be null.");
@@ -2141,6 +2144,7 @@ export class Client implements IClient {
             method: "GET",
             signal,
             headers: {
+                "Accept": "application/json"
             }
         };
 
@@ -2149,19 +2153,21 @@ export class Client implements IClient {
         });
     }
 
-    protected processMyAssets(response: Response): Promise<void> {
+    protected processMyAssets(response: Response): Promise<AssetSummaryDtoPagedResultDto> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as AssetSummaryDtoPagedResultDto;
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             });
         }
-        return Promise.resolve<void>(null as any);
+        return Promise.resolve<AssetSummaryDtoPagedResultDto>(null as any);
     }
 
     /**
@@ -2211,7 +2217,7 @@ export class Client implements IClient {
      * @param pageSize (optional) 
      * @return OK
      */
-    notifications(isRead: boolean | undefined, page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<void> {
+    notifications(isRead: boolean | undefined, page: number | undefined, pageSize: number | undefined, signal?: AbortSignal): Promise<NotificationDtoPagedResultDto> {
         let url_ = this.baseUrl + "/api/notifications?";
         if (isRead === null)
             throw new globalThis.Error("The parameter 'isRead' cannot be null.");
@@ -2244,7 +2250,9 @@ export class Client implements IClient {
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as NotificationDtoPagedResultDto;
+            return result200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2257,7 +2265,7 @@ export class Client implements IClient {
     /**
      * @return OK
      */
-    unreadCount(signal?: AbortSignal): Promise<void> {
+    unreadCount(signal?: AbortSignal): Promise<UnreadCountDto> {
         let url_ = this.baseUrl + "/api/notifications/unread-count";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -2278,7 +2286,8 @@ export class Client implements IClient {
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
             return response.text().then((_responseText) => {
-            return;
+            const parsed = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            return typeof parsed === "number" ? { count: parsed } : (parsed as UnreadCountDto);
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {
@@ -2767,6 +2776,30 @@ export interface LoginUserCommand {
 export interface LookupItemDto {
     id?: string;
     name?: string | undefined;
+}
+
+export type NotificationDeliveryType = -1 | 0 | 1 | 2 | 3 | 4;
+
+export interface NotificationDto {
+    notificationId?: string;
+    type?: NotificationDeliveryType;
+    message?: string | undefined;
+    assetId?: string;
+    commentId?: string;
+    isRead?: boolean;
+    createdAt?: string;
+}
+
+export interface NotificationDtoPagedResultDto {
+    items?: NotificationDto[] | undefined;
+    page?: number;
+    pageSize?: number;
+    totalCount?: number;
+    readonly hasNextPage?: boolean;
+}
+
+export interface UnreadCountDto {
+    count?: number;
 }
 
 export interface PreviewAssetCommand {
