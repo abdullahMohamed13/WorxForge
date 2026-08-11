@@ -8,6 +8,7 @@ import { ROUTES } from "../../../constants/routes.constants";
 import { useAssetDetails } from "../hooks/useAssetDetails";
 import { useBookmark } from "../hooks/useBookmark";
 import { useAssetReaction, type ReactionType } from "../hooks/useAssetReaction";
+import { AssetCommentsSection } from "../../comments/components/AssetCommentsSection";
 
 type PrimaryTab = "overview" | "discussion";
 type MarkdownTab = "rendered" | "raw";
@@ -67,6 +68,7 @@ export function AssetDetailsPage() {
   const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
   const [likeCount, setLikeCount] = useState(0);
   const [dislikeCount, setDislikeCount] = useState(0);
+  const [discussionCount, setDiscussionCount] = useState(0);
   const { mutate: toggleReaction } = useAssetReaction();
 
   const [primaryTab, setPrimaryTab] = useState<PrimaryTab>("overview");
@@ -83,6 +85,10 @@ export function AssetDetailsPage() {
     setDislikeCount(asset?.dislikeCount ?? 0);
     setUserReaction((asset?.currentUserReaction as ReactionType | null) ?? null);
   }, [asset?.likeCount, asset?.dislikeCount, asset?.currentUserReaction]);
+
+  useEffect(() => {
+    setDiscussionCount(asset?.commentCount ?? 0);
+  }, [asset?.commentCount]);
 
   if (isLoading) {
     return (
@@ -350,7 +356,7 @@ export function AssetDetailsPage() {
                   : "border-transparent text-text/70 hover:text-text"
                 }`}
             >
-              Discussion (0)
+              Discussion ({discussionCount})
             </button>
           </div>
         </div>
@@ -387,7 +393,9 @@ export function AssetDetailsPage() {
             )}
           </div>
         ) : (
-          <div className="p-4 sm:p-6" />
+          <div className="p-4 sm:p-6">
+            <AssetCommentsSection assetId={asset.assetId} onTotalCountChange={setDiscussionCount} />
+          </div>
         )}
       </section>
     </main>

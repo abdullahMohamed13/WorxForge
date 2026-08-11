@@ -1,4 +1,4 @@
-import { ApiException, Client, type AssetDetailsDto, type AssetSummaryDto, type CreateAssetRequest, type LookupItemDto, type UpdateAssetRequest } from "../../../api/worxforgeClient";
+import { ApiException, Client, type AssetSummaryDto, type CreateAssetRequest, type LookupItemDto, type UpdateAssetRequest } from "../../../api/worxforgeClient";
 import { createDevAuthenticatedFetch } from "../../../api/httpClient";
 import type { AssetDetails, AssetSummary, MyAssetsRequest, MyAssetsResult } from "../models/assets.models";
 
