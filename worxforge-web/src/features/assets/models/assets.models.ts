@@ -15,8 +15,21 @@ export interface AssetSummary {
   isBookmarked: boolean;
 }
 
-export interface AssetDetails extends AssetSummary {
+export interface AssetDetails {
+  assetId: string;
+  title: string;
+  description?: string;
+  assetTypeName: string;
+  domainName: string;
+  tools: string[];
+  authorDisplayName: string;
+  createdAt: string;
+  updatedAt: string;
+  commentCount: number;
+  isBookmarked: boolean;
+  likeCount: number;
   dislikeCount: number;
+  currentUserReaction?: "Like" | "Dislike";
   markdownContent: string;
   useCaseName: string;
   compatibleTools: string[];

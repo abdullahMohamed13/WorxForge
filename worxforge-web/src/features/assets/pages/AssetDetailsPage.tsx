@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { ROUTES } from "../../../constants/routes.constants";
 import { useAssetDetails } from "../hooks/useAssetDetails";
 import { useBookmark } from "../hooks/useBookmark";
+import { useAssetReaction, type ReactionType } from "../hooks/useAssetReaction";
 
 type PrimaryTab = "overview" | "discussion";
 type MarkdownTab = "rendered" | "raw";
@@ -63,10 +64,13 @@ export function AssetDetailsPage() {
   const { assetId } = useParams<{ assetId: string }>();
   const { data: asset, isLoading, isError } = useAssetDetails(assetId);
 
+  const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
+  const [likeCount, setLikeCount] = useState(0);
+  const [dislikeCount, setDislikeCount] = useState(0);
+  const { mutate: toggleReaction } = useAssetReaction();
+
   const [primaryTab, setPrimaryTab] = useState<PrimaryTab>("overview");
   const [markdownTab, setMarkdownTab] = useState<MarkdownTab>("rendered");
-  const [isLiked, setIsLiked] = useState(false);
-  const [isDisliked, setIsDisliked] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const { mutate: toggleBookmark, isPending: isBookmarkPending } = useBookmark();
 
@@ -74,8 +78,11 @@ export function AssetDetailsPage() {
     setIsSaved(asset?.isBookmarked ?? false);
   }, [asset?.isBookmarked]);
 
-  const likeCount = (asset?.reactionCount ?? 0) + (isLiked ? 1 : 0);
-  const dislikeCount = (asset?.dislikeCount ?? 0) + (isDisliked ? 1 : 0);
+  useEffect(() => {
+    setLikeCount(asset?.likeCount ?? 0);
+    setDislikeCount(asset?.dislikeCount ?? 0);
+    setUserReaction((asset?.currentUserReaction as ReactionType | null) ?? null);
+  }, [asset?.likeCount, asset?.dislikeCount, asset?.currentUserReaction]);
 
   if (isLoading) {
     return (
@@ -118,24 +125,51 @@ export function AssetDetailsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const handleLike = () => {
-    setIsLiked((current) => {
-      const next = !current;
-      if (next) {
-        setIsDisliked(false);
-      }
-      return next;
-    });
-  };
+  const handleReactionClick = (type: ReactionType) => {
+    if (!assetId) return;
 
-  const handleDislike = () => {
-    setIsDisliked((current) => {
-      const next = !current;
-      if (next) {
-        setIsLiked(false);
+    const previousReaction = userReaction;
+    const previousLikeCount = likeCount;
+    const previousDislikeCount = dislikeCount;
+
+    let nextReaction: ReactionType | null;
+    let nextLikeCount = likeCount;
+    let nextDislikeCount = dislikeCount;
+
+    if (previousReaction === type) {
+      // clicking the active reaction again un-reacts (matches API toggle-off)
+      nextReaction = null;
+      if (type === "Like") {
+        nextLikeCount -= 1;
+      } else {
+        nextDislikeCount -= 1;
       }
-      return next;
-    });
+    } else {
+      nextReaction = type;
+      if (type === "Like") {
+        nextLikeCount += 1;
+        if (previousReaction === "Dislike") nextDislikeCount -= 1;
+      } else {
+        nextDislikeCount += 1;
+        if (previousReaction === "Like") nextLikeCount -= 1;
+      }
+    }
+
+    setUserReaction(nextReaction);
+    setLikeCount(nextLikeCount);
+    setDislikeCount(nextDislikeCount);
+
+    toggleReaction(
+      { assetId, reactionType: type },
+      {
+        onError: () => {
+          setUserReaction(previousReaction);
+          setLikeCount(previousLikeCount);
+          setDislikeCount(previousDislikeCount);
+          toast.error("Failed to update reaction. Please try again.");
+        }
+      }
+    );
   };
 
   const handleShare = async () => {
@@ -205,13 +239,12 @@ export function AssetDetailsPage() {
         <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-secondary/30 pt-4">
           <button
             type="button"
-            onClick={handleLike}
-            aria-pressed={isLiked}
-            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-              isLiked
+            onClick={() => handleReactionClick("Like")}
+            aria-pressed={userReaction === "Like"}
+            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${userReaction === "Like"
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-secondary/30 bg-white text-text hover:bg-primary/10"
-            }`}
+              }`}
           >
             <FaRegThumbsUp className="size-3.5" aria-hidden="true" />
             Like
@@ -219,13 +252,12 @@ export function AssetDetailsPage() {
 
           <button
             type="button"
-            onClick={handleDislike}
-            aria-pressed={isDisliked}
-            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-              isDisliked
+            onClick={() => handleReactionClick("Dislike")}
+            aria-pressed={userReaction === "Dislike"}
+            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${userReaction === "Dislike"
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-secondary/30 bg-white text-text hover:bg-primary/10"
-            }`}
+              }`}
           >
             <FaRegThumbsDown className="size-3.5" aria-hidden="true" />
             Dislike
@@ -268,11 +300,10 @@ export function AssetDetailsPage() {
               );
             }}
             aria-pressed={isSaved}
-            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${
-              isSaved
+            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${isSaved
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-secondary/30 bg-white text-text hover:bg-primary/10"
-            }`}
+              }`}
           >
             {isSaved ? "Saved" : "Save"}
           </button>
@@ -304,22 +335,20 @@ export function AssetDetailsPage() {
             <button
               type="button"
               onClick={() => setPrimaryTab("overview")}
-              className={`rounded-t-md border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
-                primaryTab === "overview"
+              className={`rounded-t-md border-b-2 px-3 py-2 text-sm font-medium transition-colors ${primaryTab === "overview"
                   ? "border-primary text-primary"
                   : "border-transparent text-text/70 hover:text-text"
-              }`}
+                }`}
             >
               Overview
             </button>
             <button
               type="button"
               onClick={() => setPrimaryTab("discussion")}
-              className={`rounded-t-md border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
-                primaryTab === "discussion"
+              className={`rounded-t-md border-b-2 px-3 py-2 text-sm font-medium transition-colors ${primaryTab === "discussion"
                   ? "border-primary text-primary"
                   : "border-transparent text-text/70 hover:text-text"
-              }`}
+                }`}
             >
               Discussion (0)
             </button>
@@ -332,18 +361,16 @@ export function AssetDetailsPage() {
               <button
                 type="button"
                 onClick={() => setMarkdownTab("rendered")}
-                className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
-                  markdownTab === "rendered" ? "bg-primary/10 text-primary" : "text-text/70 hover:text-text"
-                }`}
+                className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${markdownTab === "rendered" ? "bg-primary/10 text-primary" : "text-text/70 hover:text-text"
+                  }`}
               >
                 Rendered
               </button>
               <button
                 type="button"
                 onClick={() => setMarkdownTab("raw")}
-                className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${
-                  markdownTab === "raw" ? "bg-primary/10 text-primary" : "text-text/70 hover:text-text"
-                }`}
+                className={`rounded px-3 py-1.5 text-xs font-medium transition-colors ${markdownTab === "raw" ? "bg-primary/10 text-primary" : "text-text/70 hover:text-text"
+                  }`}
               >
                 Raw Markdown
               </button>
