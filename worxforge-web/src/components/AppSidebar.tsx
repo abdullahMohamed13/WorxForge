@@ -301,13 +301,13 @@ export function AppSidebar({
                 />
                 <div
                   className={cn(
-                    "flex min-w-0 items-center justify-between gap-2 overflow-hidden transition-[opacity,max-width,transform] motion-safe:duration-220 motion-safe:ease-out motion-reduce:transition-none",
+                    "min-w-0 overflow-hidden transition-[opacity,max-width,transform] motion-safe:duration-220 motion-safe:ease-out motion-reduce:transition-none",
                     isCollapsed
-                      ? "max-w-0 flex-none justify-center opacity-0 -translate-y-1 scale-[0.985]"
-                      : "max-w-[12rem] flex-1 opacity-100 translate-y-0 scale-100"
+                      ? "max-w-0 opacity-0 -translate-y-1 scale-[0.985]"
+                      : "max-w-[12rem] opacity-100 translate-y-0 scale-100"
                   )}
                 >
-                  {!isCollapsed ? <span className="min-w-0 flex-1 truncate font-medium">Sign out</span> : null}
+                  {!isCollapsed ? <span className="block truncate font-medium">Sign out</span> : null}
                 </div>
               </button>
             </nav>
