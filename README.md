@@ -199,3 +199,11 @@ npm run test:watch
    chore: update dependency versions
    ```
 4. Open a pull request targeting the `dev` branch.
+
+
+
+## Contributors:
+1. Aliaa Eissa https://www.linkedin.com/in/alyaaeissa2005/
+2. Aya Sherif https://www.linkedin.com/in/aya-sherif-56721b326/
+3. Amr Atif https://www.linkedin.com/in/amr-atif-68b121363/
+4. Mahmoud Tarek https://www.linkedin.com/in/mahmoud-tarek-5549a2375/
