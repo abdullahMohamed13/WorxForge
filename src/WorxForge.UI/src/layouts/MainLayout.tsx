@@ -31,7 +31,7 @@ const getNextDesktopSidebarState = (state: DesktopSidebarState): DesktopSidebarS
 
 export function MainLayout() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
-  const [desktopSidebarState, setDesktopSidebarState] = useState<DesktopSidebarState>("closed");
+  const [desktopSidebarState, setDesktopSidebarState] = useState<DesktopSidebarState>("expanded");
   const [animateSidebarSequence, setAnimateSidebarSequence] = useState(false);
   const [brandTransfer, setBrandTransfer] = useState<BrandTransfer | null>(null);
   const location = useLocation();

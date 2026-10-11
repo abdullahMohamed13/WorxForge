@@ -41,25 +41,22 @@ describe("MainLayout", () => {
 
     renderLayout(ROUTES.HOME);
 
-    const desktopToggle = screen.getByRole("button", { name: "Open sidebar" });
-
-    await user.click(desktopToggle);
-    const collapseToggle = await waitForSidebarToggle("Collapse sidebar");
+    const collapseToggle = screen.getByRole("button", { name: "Collapse sidebar" });
+    expect(screen.getByRole("link", { name: "Explore" })).not.toBeNull();
+    expect(screen.queryByRole("dialog", { name: "Primary navigation" })).toBeNull();
 
     await user.click(collapseToggle);
     const closeToggle = await waitForSidebarToggle("Close sidebar");
 
     await user.click(closeToggle);
-    expect(await waitForSidebarToggle("Open sidebar")).not.toBeNull();
+    const openToggle = await waitForSidebarToggle("Open sidebar");
+
+    await user.click(openToggle);
+    expect(await waitForSidebarToggle("Collapse sidebar")).not.toBeNull();
   }, 10000);
 
-  it("activates Publish Asset without also activating My Assets on the create route", async () => {
-    const user = userEvent.setup();
-
+  it("activates Publish Asset without also activating My Assets on the create route", () => {
     renderLayout(ROUTES.MY_ASSETS_CREATE);
-
-    await user.click(screen.getByRole("button", { name: "Open sidebar" }));
-    await waitForSidebarToggle("Collapse sidebar");
 
     const publishAssetLink = screen.getByRole("link", { name: "Publish Asset" });
     const myAssetsLink = screen.getByRole("link", { name: "My Assets" });
@@ -73,7 +70,6 @@ describe("MainLayout", () => {
 
     renderLayout(ROUTES.HOME);
 
-    await user.click(screen.getByRole("button", { name: "Open sidebar" }));
     const collapseToggle = await waitForSidebarToggle("Collapse sidebar");
     await user.click(collapseToggle);
 
@@ -81,13 +77,8 @@ describe("MainLayout", () => {
     expect(screen.getByRole("link", { name: "Home" }).getAttribute("aria-current")).toBe("page");
   });
 
-  it("activates My Assets for the edit route without activating Publish Asset", async () => {
-    const user = userEvent.setup();
-
+  it("activates My Assets for the edit route without activating Publish Asset", () => {
     renderLayout(ROUTES.MY_ASSETS_EDIT("asset-42"));
-
-    await user.click(screen.getByRole("button", { name: "Open sidebar" }));
-    await waitForSidebarToggle("Collapse sidebar");
 
     const publishAssetLink = screen.getByRole("link", { name: "Publish Asset" });
     const myAssetsLink = screen.getByRole("link", { name: "My Assets" });
