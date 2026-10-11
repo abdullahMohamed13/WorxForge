@@ -1,5 +1,5 @@
 import { Navigate, useLocation } from "react-router-dom";
-import { APP_NAME } from "../../../constants/app.constants";
+import { APP_DESCRIPTION, APP_NAME, APP_TAGLINE } from "../../../constants/app.constants";
 import { ROUTES } from "../../../constants/routes.constants";
 import { useAuthContext } from "../../../contexts/AuthContext";
 import { Logo } from "../../../layouts/components/Logo";
@@ -37,6 +37,8 @@ export function LoginPage() {
           <h1 className="wf-section-enter text-2xl font-semibold text-foreground" style={{ animationDelay: entranceSteps.heading }}>
             Welcome to {APP_NAME}
           </h1>
+          <p className="text-sm font-medium">{APP_DESCRIPTION}</p>
+          <p className="text-xs text-muted-foreground">{APP_TAGLINE}</p>
           <p className="wf-section-enter text-sm text-muted-foreground" style={{ animationDelay: entranceSteps.description }}>
             Sign in or create your account with Google.
           </p>

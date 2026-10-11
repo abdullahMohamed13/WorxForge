@@ -1,6 +1,6 @@
 # Architecture
 
-Knowledge Hub separates domain contracts, application handlers, persistence,
+WorxForge separates domain contracts, application handlers, persistence,
 and HTTP endpoints. The React app calls a typed API client; Vite proxies local
 API and SignalR requests.
 

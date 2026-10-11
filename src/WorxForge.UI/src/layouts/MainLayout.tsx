@@ -5,6 +5,7 @@ import { AppSidebar } from "../components/AppSidebar";
 import { cn } from "../lib/utils";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
+import { APP_DESCRIPTION, APP_NAME } from "../constants/app.constants";
 
 type DesktopSidebarState = "closed" | "expanded" | "collapsed";
 type BrandTransfer = {
@@ -375,8 +376,8 @@ export function MainLayout() {
               <Menu aria-hidden="true" className="size-5" />
             </button>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold tracking-tight">Knowledge Hub</p>
-              <p className="truncate text-xs text-muted-foreground">Creator workspace</p>
+              <p className="truncate text-sm font-semibold tracking-tight">{APP_NAME}</p>
+              <p className="truncate text-xs text-muted-foreground">{APP_DESCRIPTION}</p>
             </div>
           </header>
 

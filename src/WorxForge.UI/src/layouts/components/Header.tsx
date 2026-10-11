@@ -3,7 +3,7 @@ import { FaRegBell, FaUserCircle } from "react-icons/fa";
 import { useAuthContext } from "../../contexts/AuthContext";
 import { useNotificationContext } from "../../contexts/NotificationContext";
 import { ROUTES } from "../../constants/routes.constants";
-import { APP_NAME } from "../../constants/app.constants";
+import { APP_DESCRIPTION, APP_NAME } from "../../constants/app.constants";
 import { cn } from "../../lib/utils";
 import { Logo } from "./Logo";
 
@@ -73,7 +73,8 @@ export function Header({
             showLogo ? "translate-x-0" : "-translate-x-0.5"
           )}
         >
-          {APP_NAME}
+          <span className="block">{APP_NAME}</span>
+          <span className="block text-xs font-normal text-muted-foreground">{APP_DESCRIPTION}</span>
         </span>
       </Link>
 

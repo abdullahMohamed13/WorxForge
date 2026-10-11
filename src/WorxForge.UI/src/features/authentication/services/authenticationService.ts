@@ -49,7 +49,7 @@ function mapRole(role: string | number | undefined): UserSession["role"] {
 function mapMeResponse(payload: MeResponse): UserSession {
   return {
     userId: payload.userId ?? "",
-    displayName: payload.displayName?.trim() || payload.username?.trim() || "Knowledge Hub User",
+    displayName: payload.displayName?.trim() || payload.username?.trim() || "WorxForge User",
     role: mapRole(payload.role),
     avatarUrl: payload.avatarUrl
   };

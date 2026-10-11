@@ -2,7 +2,7 @@ import type { RefObject } from "react";
 import { useId, useState } from "react";
 import { LogOut, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { APP_NAME } from "../constants/app.constants";
+import { APP_DESCRIPTION, APP_NAME } from "../constants/app.constants";
 import { useAuthContext } from "../contexts/AuthContext";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { cn } from "../lib/utils";
@@ -195,6 +195,7 @@ export function AppSidebar({
               {showDesktopBrandLabel ? (
                 <>
                 <p className="truncate text-lg font-semibold text-text">{APP_NAME}</p>
+                <p className="truncate text-xs text-muted-foreground">{APP_DESCRIPTION}</p>
                 </>
               ) : null}
             </div>

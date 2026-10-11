@@ -261,7 +261,7 @@ export function PublishAssetPage() {
   const hasEditError = isEditMode && editAssetQuery.isError;
   const lookupErrorMessage = formatLoadError(
     lookupsQuery.error,
-    "The asset lookup data could not be loaded. Verify that the Knowledge Hub API is running, then retry."
+    "The asset lookup data could not be loaded. Verify that the WorxForge API is running, then retry."
   );
   const editErrorMessage = formatLoadError(
     editAssetQuery.error,
@@ -424,7 +424,7 @@ export function PublishAssetPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]" aria-busy={isPending}>
         <div className="space-y-6">
-          <Section title="Asset Metadata" description="Use the real lookup data from Knowledge Hub to describe how the asset should be categorized." delayMs={80}>
+          <Section title="Asset Metadata" description="Use the real lookup data from WorxForge to describe how the asset should be categorized." delayMs={80}>
             {lookupsQuery.isLoading ? (
               <div className="wf-status-enter mb-4 flex items-center gap-2 rounded-xl border border-border bg-muted/40 px-3 py-2.5 text-sm text-muted-foreground" role="status" aria-live="polite">
                 <LoaderCircle className="size-4 text-primary motion-safe:animate-spin motion-reduce:animate-none" aria-hidden="true" />

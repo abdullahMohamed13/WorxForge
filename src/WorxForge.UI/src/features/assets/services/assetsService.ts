@@ -221,7 +221,7 @@ async function fetchJson<T>(input: RequestInfo, init?: RequestInit): Promise<T> 
       }
     });
   } catch {
-    throw new AssetRequestError("Could not connect to the Knowledge Hub API. Verify that the API is running and its HTTPS certificate is trusted.");
+    throw new AssetRequestError("Could not connect to the WorxForge API. Verify that the API is running and its HTTPS certificate is trusted.");
   }
 
   if (!response.ok) {
@@ -256,7 +256,7 @@ async function fetchLookupItems(
     });
   } catch {
     throw new AssetLookupError(
-      `Could not reach the Knowledge Hub API while loading ${label}. Verify that the API and local proxy are running.`
+      `Could not reach the WorxForge API while loading ${label}. Verify that the API and local proxy are running.`
     );
   }
 

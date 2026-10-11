@@ -1,6 +1,10 @@
-# Knowledge Hub (WorxForge)
+# WorxForge
 
-An open-source knowledgebase hub for sharing and discovering reusable prompts,
+**The ITWorx AI Assets Hub**
+
+Discover · Contribute · Share · Reuse
+
+WorxForge is an open-source AI assets hub for sharing and discovering reusable prompts,
 agents, skills, workflows, and coding standards. The monorepo contains an
 ASP.NET Core API and a React web app. It ships with generic lookup data and no
 external login accounts, mailboxes, credentials, or organization knowledge assets.

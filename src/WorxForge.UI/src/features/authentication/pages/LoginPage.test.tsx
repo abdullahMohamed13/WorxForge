@@ -24,7 +24,7 @@ vi.mock("../components/GoogleSignInButton", () => ({
 }));
 
 describe("LoginPage", () => {
-  it("renders Knowledge Hub branding and Google auth copy", () => {
+  it("renders WorxForge branding and Google auth copy", () => {
     vi.mocked(useAuthContext).mockReturnValue({
       isAuthenticated: false,
       isLoading: false,
@@ -39,7 +39,7 @@ describe("LoginPage", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByRole("heading", { name: "Welcome to Knowledge Hub" })).not.toBeNull();
+    expect(screen.getByRole("heading", { name: "Welcome to WorxForge" })).not.toBeNull();
     expect(screen.getByText("Sign in or create your account with Google.")).not.toBeNull();
     expect(screen.getByText("Secure authentication with Google")).not.toBeNull();
   });
