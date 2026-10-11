@@ -134,12 +134,6 @@ if ($runBackend) {
             Desc     = 'Frontend origin allowed by CORS (no trailing slash)'
             Example  = 'http://localhost:5173'
             Optional = $false
-        },
-        [pscustomobject]@{
-            Key      = 'Authentication:Google:ClientId'
-            Desc     = 'Google OAuth 2.0 Client ID (needed for real Google sign-in; debug-login works without it)'
-            Example  = '123456789-abc.apps.googleusercontent.com'
-            Optional = $true
         }
     )
 
@@ -151,7 +145,7 @@ if ($runBackend) {
 
         if ($NonInteractive) {
             if ($s.Optional) {
-                Write-Warn "$($s.Key) not set (optional - skip if not using Google sign-in)."
+                Write-Warn "$($s.Key) not set (optional)."
             } else {
                 Write-Warn "$($s.Key) not set - required. Run: dotnet user-secrets set `"$($s.Key)`" `"<value>`" --project src/WorxForge.API"
             }
@@ -216,7 +210,7 @@ if ($runBackend) {
     Write-Host '  Backend setup complete.' -ForegroundColor Green
     Write-Info '  Run the API:  cd src\WorxForge.API  ->  dotnet run'
     Write-Info '  Swagger:      https://localhost:7235/swagger  (or http://localhost:5222/swagger)'
-    Write-Info '  Dev JWT:      POST /api/authentication/debug-login'
+    Write-Info '  Guest access: enabled; no login or SMTP account is required.'
     Write-Host ''
 }
 
@@ -313,15 +307,10 @@ if ($runFrontend) {
             if ([string]::IsNullOrWhiteSpace($proxyTarget)) { $proxyTarget = 'https://localhost:7235' }
 
             Write-Host ''
-            Write-Host '  VITE_GOOGLE_CLIENT_ID' -ForegroundColor White
-            Write-Host '    Google OAuth 2.0 Client ID from Google Cloud Console.' -ForegroundColor DarkGray
-            Write-Host '    Required for the Google Sign-In button to render.' -ForegroundColor DarkGray
-            Write-Host '    Example: 123456789-abc.apps.googleusercontent.com' -ForegroundColor DarkGray
-            $googleClientId = Read-Host '    Value'
+            # TODO: Login is skipped pending adding an SMTP account.
 
             $envContent = $envContent -replace '(?m)^(VITE_API_BASE_URL=).*$',     "VITE_API_BASE_URL=$apiBaseUrl"
             $envContent = $envContent -replace '(?m)^(VITE_API_PROXY_TARGET=).*$', "VITE_API_PROXY_TARGET=$proxyTarget"
-            $envContent = $envContent -replace '(?m)^(VITE_GOOGLE_CLIENT_ID=).*$', "VITE_GOOGLE_CLIENT_ID=$googleClientId"
 
             [System.IO.File]::WriteAllText($envLocalPath, $envContent, [System.Text.Encoding]::UTF8)
             Write-Ok 'Created .env.local.'

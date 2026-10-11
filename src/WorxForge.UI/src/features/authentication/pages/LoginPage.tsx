@@ -1,4 +1,4 @@
-﻿import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { APP_NAME } from "../../../constants/app.constants";
 import { ROUTES } from "../../../constants/routes.constants";
 import { useAuthContext } from "../../../contexts/AuthContext";
@@ -15,13 +15,14 @@ const entranceSteps = {
 } as const;
 
 export function LoginPage() {
-  const { isAuthenticated, isLoading } = useAuthContext();
+  const { isAuthenticated, isLoading, isGuestAccess } = useAuthContext();
   const { authenticateWithGoogleToken, errorMessage, isAuthenticating } = useGoogleAuthentication();
   const location = useLocation();
 
   const returnUrl = (location.state as { returnUrl?: string } | null)?.returnUrl;
 
-  if (!isLoading && isAuthenticated) {
+  // TODO: Login is skipped pending adding an SMTP account and completing account flows.
+  if (isGuestAccess || (!isLoading && isAuthenticated)) {
     return <Navigate to={returnUrl ?? ROUTES.HOME} replace />;
   }
 
@@ -67,5 +68,3 @@ export function LoginPage() {
     </section>
   );
 }
-
-

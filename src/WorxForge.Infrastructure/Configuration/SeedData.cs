@@ -27,7 +27,7 @@ internal static class SeedData
 
     internal static readonly Tool[] Tools =
     [
-        new Tool { ToolId = Guid.Parse("41111111-1111-1111-1111-111111111101"), Name = "WorxGPT" },
+        new Tool { ToolId = Guid.Parse("41111111-1111-1111-1111-111111111101"), Name = "AI Assistant" },
         new Tool { ToolId = Guid.Parse("41111111-1111-1111-1111-111111111102"), Name = "Claude Code" },
         new Tool { ToolId = Guid.Parse("41111111-1111-1111-1111-111111111103"), Name = "GitHub Copilot" }
     ];

@@ -1,4 +1,4 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -179,7 +179,12 @@ public sealed class AuthenticationService(
         return await BuildAccessTokenAsync(user, cancellationToken);
     }
     public Task VerifyEmailAsync(string token, CancellationToken cancellationToken) => throw new NotImplementedException();
-    public Task RequestPasswordResetAsync(string email, CancellationToken cancellationToken) => throw new NotImplementedException();
+    public Task RequestPasswordResetAsync(string email, CancellationToken cancellationToken)
+    {
+        // TODO: Password-reset email is skipped pending adding an SMTP account.
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.CompletedTask;
+    }
     public Task ResetPasswordAsync(string token, string newPassword, string newPasswordConfirm, CancellationToken cancellationToken) => throw new NotImplementedException();
 
     public async Task RevokeSessionAsync(Guid userId, Guid sessionId, CancellationToken cancellationToken)

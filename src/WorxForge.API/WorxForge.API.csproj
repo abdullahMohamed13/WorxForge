@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <UserSecretsId>f0ffd33a-396f-4e52-86eb-6849cef5199c</UserSecretsId>
+    <UserSecretsId>knowledge-hub-local-development</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

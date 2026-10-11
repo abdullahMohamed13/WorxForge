@@ -1,4 +1,6 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Options;
+using WorxForge.Infrastructure.Options;
 using WorxForge.Domain.Constants;
 using WorxForge.Core.Abstractions;
 using WorxForge.Core.Interfaces.Services;
@@ -16,11 +18,17 @@ public static class AuthenticationEndpointGroup
     public static RouteGroupBuilder MapAuthenticationEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/authentication");
-        group.MapPost("/login", LoginUserAsync);
-        if (app is WebApplication webApplication && webApplication.Environment.IsDevelopment())
+        var guestAccess = app.ServiceProvider.GetRequiredService<IOptions<GuestAccessOptions>>().Value.Enabled;
+        group.MapGet("/access-mode", () => Results.Ok(new { GuestAccessEnabled = guestAccess })).AllowAnonymous();
+        // TODO: Login is skipped pending adding an SMTP account and completing account flows.
+        if (!guestAccess)
         {
-            group.MapPost("/debug-login", DebugLoginAsync);
-            group.MapPost("/debug-login-helper", DebugLoginHelperAsync);
+            group.MapPost("/login", LoginUserAsync);
+            if (app is WebApplication webApplication && webApplication.Environment.IsDevelopment())
+            {
+                group.MapPost("/debug-login", DebugLoginAsync);
+                group.MapPost("/debug-login-helper", DebugLoginHelperAsync);
+            }
         }
         group.MapPost("/logout", LogoutUserAsync).RequireAuthorization(PolicyConstants.AuthenticatedUser);
         group.MapGet("/me", GetMyProfileAsync).RequireAuthorization(PolicyConstants.AuthenticatedUser);
@@ -62,8 +70,14 @@ public static class AuthenticationEndpointGroup
     private static async Task<IResult> LogoutUserAsync(
         HttpContext httpContext,
         ICommandHandler<LogoutUserCommand> handler,
+        IOptions<GuestAccessOptions> guestAccess,
         CancellationToken cancellationToken)
     {
+        if (guestAccess.Value.Enabled)
+        {
+            return Results.NoContent();
+        }
+
         var userIdClaim = httpContext.User.FindFirst(ClaimConstants.UserId)?.Value;
         var sessionIdClaim = httpContext.User.FindFirst(JwtRegisteredClaimNames.Sid)?.Value;
 
@@ -96,6 +110,14 @@ public static class AuthenticationEndpointGroup
         }
 
         var profile = await handler.HandleAsync(new GetMyProfileQuery { UserId = userId }, cancellationToken);
-        return Results.Ok(profile);
+        return Results.Ok(new
+        {
+            profile.UserId,
+            profile.Username,
+            profile.DisplayName,
+            profile.AvatarUrl,
+            profile.CreatedAt,
+            Role = httpContext.User.FindFirst(ClaimConstants.Role)?.Value ?? "User"
+        });
     }
 }

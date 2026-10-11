@@ -44,3 +44,15 @@ GoogleSignIn_Implementation_Status.md
 
 ## Publish
 publish/
+
+# Local configuration, credentials, and database exports are never public source.
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.*.local.json
+*.pfx
+*.pem
+*.key
+*.mdf
+*.ldf
+*.bak

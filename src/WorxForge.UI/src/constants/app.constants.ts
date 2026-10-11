@@ -1,3 +1,2 @@
-﻿export const APP_NAME = "WorxForge";
+export const APP_NAME = "Knowledge Hub";
 export const TODO_MESSAGE = "TODO: Implementation";
-

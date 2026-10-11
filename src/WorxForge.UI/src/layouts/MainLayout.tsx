@@ -375,7 +375,7 @@ export function MainLayout() {
               <Menu aria-hidden="true" className="size-5" />
             </button>
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold tracking-tight">WorxForge</p>
+              <p className="truncate text-sm font-semibold tracking-tight">Knowledge Hub</p>
               <p className="truncate text-xs text-muted-foreground">Creator workspace</p>
             </div>
           </header>

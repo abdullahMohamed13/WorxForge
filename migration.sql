@@ -1,4 +1,4 @@
-﻿IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
+IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL
 BEGIN
     CREATE TABLE [__EFMigrationsHistory] (
         [MigrationId] nvarchar(150) NOT NULL,
@@ -335,7 +335,7 @@ BEGIN
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'tool_id', N'name') AND [object_id] = OBJECT_ID(N'[TOOL]'))
         SET IDENTITY_INSERT [TOOL] ON;
     EXEC(N'INSERT INTO [TOOL] ([tool_id], [name])
-    VALUES (''41111111-1111-1111-1111-111111111101'', N''WorxGPT''),
+    VALUES (''41111111-1111-1111-1111-111111111101'', N''AI Assistant''),
     (''41111111-1111-1111-1111-111111111102'', N''Claude Code''),
     (''41111111-1111-1111-1111-111111111103'', N''GitHub Copilot'')');
     IF EXISTS (SELECT * FROM [sys].[identity_columns] WHERE [name] IN (N'tool_id', N'name') AND [object_id] = OBJECT_ID(N'[TOOL]'))
@@ -725,4 +725,3 @@ END;
 
 COMMIT;
 GO
-

@@ -14,12 +14,12 @@ function toAuthErrorMessage(error: unknown): string {
     }
 
     if (error.status >= 500) {
-      return "WorxForge is temporarily unavailable. Please try again shortly.";
+      return "Knowledge Hub is temporarily unavailable. Please try again shortly.";
     }
   }
 
   if (error instanceof TypeError) {
-    return "Unable to connect to WorxForge. Please check your connection and try again.";
+    return "Unable to connect to Knowledge Hub. Please check your connection and try again.";
   }
 
   return "We couldn't sign you in. Please try again.";

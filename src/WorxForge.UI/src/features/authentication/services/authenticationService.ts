@@ -1,8 +1,9 @@
-﻿import { Client, type LoginUserCommand } from "../../../api/worxforgeClient";
+import { Client, type LoginUserCommand } from "../../../api/worxforgeClient";
 import { getAccessToken } from "../../../services/tokenService";
 import type { AuthToken, UserSession } from "../models/authentication.models";
 
 export interface AuthenticationService {
+  getAccessMode(signal?: AbortSignal): Promise<{ guestAccessEnabled: boolean }>;
   loginWithGoogle(idToken: string): Promise<AuthToken>;
   getCurrentUser(signal?: AbortSignal): Promise<UserSession>;
   logout(signal?: AbortSignal): Promise<void>;
@@ -38,7 +39,7 @@ function isPathMatch(requestUrl: string, expectedPath: string): boolean {
 }
 
 function mapRole(role: string | number | undefined): UserSession["role"] {
-  if (role === "Admin" || role === 1 || role === 2) {
+  if (role === "Admin" || role === 2) {
     return "Admin";
   }
 
@@ -48,7 +49,7 @@ function mapRole(role: string | number | undefined): UserSession["role"] {
 function mapMeResponse(payload: MeResponse): UserSession {
   return {
     userId: payload.userId ?? "",
-    displayName: payload.displayName?.trim() || payload.username?.trim() || "WorxForge User",
+    displayName: payload.displayName?.trim() || payload.username?.trim() || "Knowledge Hub User",
     role: mapRole(payload.role),
     avatarUrl: payload.avatarUrl
   };
@@ -97,6 +98,11 @@ export function createAuthenticationService(baseUrl: string = import.meta.env.VI
   });
 
   return {
+    async getAccessMode(signal?: AbortSignal) {
+      const response = await fetch(`${normalizedBaseUrl}/api/authentication/access-mode`, { signal });
+      if (!response.ok) throw new Error("Could not load the application access mode.");
+      return await response.json() as { guestAccessEnabled: boolean };
+    },
     async loginWithGoogle(idToken: string) {
       cachedLoginPayload = undefined;
       const command: LoginUserCommand = { idToken };
@@ -128,5 +134,3 @@ export function createAuthenticationService(baseUrl: string = import.meta.env.VI
     }
   };
 }
-
-

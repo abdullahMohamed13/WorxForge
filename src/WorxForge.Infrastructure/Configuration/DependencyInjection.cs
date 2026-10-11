@@ -1,10 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WorxForge.Core.Interfaces.Notifications;
 using WorxForge.Core.Interfaces.Repositories;
 using WorxForge.Core.Interfaces.Services;
-using WorxForge.Infrastructure.Mapping.Profiles;
 using WorxForge.Infrastructure.Options;
 using WorxForge.Infrastructure.Repositories;
 using WorxForge.Infrastructure.Services;
@@ -17,8 +16,8 @@ public static class DependencyInjection
     {
         services.AddDbContext<WorxForgeDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-        services.AddAutoMapper(typeof(DomainMappingProfile).Assembly);
 
+        services.Configure<GuestAccessOptions>(configuration.GetSection(GuestAccessOptions.SectionName));
         services.Configure<JwtAccessTokenOptions>(configuration.GetSection(JwtAccessTokenOptions.SectionName));
         services.Configure<PasswordPolicyOptions>(configuration.GetSection(PasswordPolicyOptions.SectionName));
         services.Configure<PaginationOptions>(configuration.GetSection(PaginationOptions.SectionName));
@@ -49,6 +48,7 @@ public static class DependencyInjection
         services.AddScoped<IAdminService, AdminService>();
         services.AddScoped<IAuthorizationService, AuthorizationService>();
 
+        services.AddSingleton<INotificationEmailSender, DisabledNotificationEmailSender>();
         services.AddSingleton<INotificationQueue, NotificationQueue>();
 
         return services;

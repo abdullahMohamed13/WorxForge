@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -6,13 +6,23 @@ using System.Text;
 using WorxForge.Core.Interfaces.Repositories;
 using WorxForge.Domain.Constants;
 using WorxForge.Infrastructure.Options;
+using WorxForge.API.Services;
 
 namespace WorxForge.API.Configuration;
 
 public static class AuthenticationConfigurationExtensions
 {
-    public static IServiceCollection AddJwtAccessTokenAuthentication(this IServiceCollection services)
+    public static IServiceCollection AddWorxForgeAuthentication(this IServiceCollection services, IConfiguration configuration)
     {
+        if (configuration.GetValue<bool?>("GuestAccess:Enabled") ?? true)
+        {
+            // TODO: Login is skipped pending adding an SMTP account and completing account flows.
+            services.AddAuthentication(GuestAuthenticationHandler.SchemeName)
+                .AddScheme<Microsoft.AspNetCore.Authentication.AuthenticationSchemeOptions, GuestAuthenticationHandler>(
+                    GuestAuthenticationHandler.SchemeName, _ => { });
+            return services;
+        }
+
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer();
 

@@ -192,13 +192,13 @@ describe("PublishAssetPage", () => {
   });
 
   it("shows the controlled lookup failure reason and disables publishing", () => {
-    const lookupError = new Error("Could not reach the WorxForge API while loading domains.");
+    const lookupError = new Error("Could not reach the Knowledge Hub API while loading domains.");
     lookupError.name = "AssetLookupError";
     configureHooks({ lookupsError: true, lookupsErrorValue: lookupError });
 
     renderPage(ROUTES.MY_ASSETS_CREATE);
 
-    expect(screen.getByRole("alert").textContent).toContain("Could not reach the WorxForge API while loading domains.");
+    expect(screen.getByRole("alert").textContent).toContain("Could not reach the Knowledge Hub API while loading domains.");
     expect((screen.getByRole("button", { name: "Publish Asset" }) as HTMLButtonElement).disabled).toBe(true);
   });
 

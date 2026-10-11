@@ -1,4 +1,4 @@
-﻿import { createDevAuthenticatedFetch } from "../../../api/httpClient";
+import { createDevAuthenticatedFetch } from "../../../api/httpClient";
 import type { AssetSummary } from "../../assets/models/assets.models";
 import type { MyProfile, ProfileStatistics, PublicProfile, PublicProfileAssetsPage } from "../models/profile.models";
 
@@ -81,7 +81,7 @@ export interface ProfileService {
 
 export function createProfileService(baseUrl: string = import.meta.env.VITE_API_BASE_URL): ProfileService {
   const http = createDevAuthenticatedFetch();
-  const normalizedBaseUrl = baseUrl.replace(/\/$/, "");
+  const normalizedBaseUrl = (baseUrl ?? "").replace(/\/$/, "");
 
   async function requestJson(path: string, signal?: AbortSignal): Promise<unknown> {
     const response = await http.fetch(`${normalizedBaseUrl}${path}`, {

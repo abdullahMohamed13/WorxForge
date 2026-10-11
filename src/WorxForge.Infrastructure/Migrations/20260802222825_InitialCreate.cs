@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -442,7 +442,7 @@ namespace WorxForge.Infrastructure.Migrations
                 columns: new[] { "tool_id", "name" },
                 values: new object[,]
                 {
-                    { new Guid("41111111-1111-1111-1111-111111111101"), "WorxGPT" },
+                    { new Guid("41111111-1111-1111-1111-111111111101"), "AI Assistant" },
                     { new Guid("41111111-1111-1111-1111-111111111102"), "Claude Code" },
                     { new Guid("41111111-1111-1111-1111-111111111103"), "GitHub Copilot" }
                 });

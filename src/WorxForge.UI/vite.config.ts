@@ -24,6 +24,12 @@ export default defineConfig(({ mode }) => {
     ],
     server: {
       proxy: {
+        "/hubs": {
+          target: apiProxyTarget,
+          changeOrigin: true,
+          secure: false,
+          ws: true
+        },
         "/api": {
           target: apiProxyTarget,
           changeOrigin: true,
@@ -34,7 +40,7 @@ export default defineConfig(({ mode }) => {
     test: {
       environment: "jsdom",
       globals: true,
-      pool: "forks",
+      pool: "threads",
       setupFiles: "./src/test/setup.ts"
     }
   };

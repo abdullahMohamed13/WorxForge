@@ -1,11 +1,14 @@
-﻿import type { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { ROUTES } from "../constants/routes.constants";
 import { useAuthContext } from "../contexts/AuthContext";
 
 export function ProtectedRoute({ children }: PropsWithChildren) {
-  const { isAuthenticated, isLoading } = useAuthContext();
+  const { isAuthenticated, isLoading, isGuestAccess } = useAuthContext();
   const location = useLocation();
+
+  // TODO: Login is skipped pending adding an SMTP account and completing account flows.
+  if (isGuestAccess) return <>{children}</>;
 
   if (isLoading) {
     return (
@@ -27,4 +30,3 @@ export function ProtectedRoute({ children }: PropsWithChildren) {
 
   return <>{children}</>;
 }
-

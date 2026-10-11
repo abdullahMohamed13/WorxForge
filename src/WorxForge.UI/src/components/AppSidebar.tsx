@@ -132,7 +132,7 @@ export function AppSidebar({
   onNavigate
 }: AppSidebarProps) {
   const { unreadCount } = useNotificationContext();
-  const { signOut } = useAuthContext();
+  const { signOut, isGuestAccess } = useAuthContext();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const primaryLabelId = useId();
   const accountLabelId = useId();
@@ -274,7 +274,7 @@ export function AppSidebar({
                 />
               ))}
 
-              <button
+              {!isGuestAccess && (<button
                 type="button"
                 onClick={() => {
                   void handleSignOut();
@@ -309,7 +309,7 @@ export function AppSidebar({
                 >
                   {!isCollapsed ? <span className="block truncate font-medium">Sign out</span> : null}
                 </div>
-              </button>
+              </button>)}
             </nav>
           </section>
         </div>

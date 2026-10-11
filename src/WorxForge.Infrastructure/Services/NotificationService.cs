@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using WorxForge.Core.Interfaces.Notifications;
 using WorxForge.Core.Interfaces.Repositories;
 using WorxForge.Core.Interfaces.Services;
@@ -14,6 +14,7 @@ namespace WorxForge.Infrastructure.Services;
 public sealed class NotificationService(
     INotificationRepository notificationRepository,
     INotificationQueue notificationQueue,
+    INotificationEmailSender emailSender,
     ILogger<NotificationService> logger) : INotificationService
 {
     public async Task<PagedResultDto<NotificationDto>> GetNotificationsAsync(Guid userId, bool? isRead, int page, int pageSize, CancellationToken cancellationToken)
@@ -74,6 +75,10 @@ public sealed class NotificationService(
 
         // Persist first so the notification survives even if delivery never happens.
         await notificationRepository.AddAsync(notification, cancellationToken);
+
+        // TODO: Email notifications are skipped pending adding an SMTP account.
+        // The registered sender completes successfully without attempting delivery.
+        await emailSender.SendAsync(recipientUserId, message, cancellationToken);
 
         try
         {

@@ -40,7 +40,7 @@ const logger: signalR.ILogger = {
 
 /** Builds a SignalR client for the notifications hub, authenticated via the access token query string. */
 export function createNotificationHubClient(
-  baseUrl: string = import.meta.env.VITE_API_BASE_URL
+  baseUrl: string = import.meta.env.VITE_API_BASE_URL ?? ""
 ): NotificationHubClient {
   const connection = new signalR.HubConnectionBuilder()
     .withUrl(`${baseUrl}/hubs/notifications`, {

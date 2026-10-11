@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi;
+using Microsoft.OpenApi;
 using Serilog;
 using WorxForge.API.Configuration;
 using WorxForge.API.Extensions;
@@ -18,27 +18,30 @@ builder.Host.UseSerilog((context, loggerConfiguration) =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    if (!(builder.Configuration.GetValue<bool?>("GuestAccess:Enabled") ?? true))
     {
-        Name = "Authorization",
-        Type = SecuritySchemeType.Http,
-        Scheme = "bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Paste the JWT token only (no Bearer prefix). Swagger adds it automatically."
-    });
+        options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Name = "Authorization",
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Paste the JWT token only (no Bearer prefix). Swagger adds it automatically."
+        });
 
-    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
-    {
-        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
-    });
-    options.OperationFilter<BearerSecurityOperationFilter>();
+        options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+        });
+        options.OperationFilter<BearerSecurityOperationFilter>();
+    }
 });
 builder.Services.AddOpenApi();
 builder.Services.AddWorxForgeCors(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
-builder.Services.AddJwtAccessTokenAuthentication();
+builder.Services.AddWorxForgeAuthentication(builder.Configuration);
 builder.Services.AddWorxForgeAuthorization();
 builder.Services.AddWorxForgeCore();
 builder.Services.AddWorxForgeInfrastructure(builder.Configuration);

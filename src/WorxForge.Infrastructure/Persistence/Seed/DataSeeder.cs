@@ -1,5 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using WorxForge.Infrastructure.Options;
 using WorxForge.Infrastructure.Configuration;
 
 namespace WorxForge.Infrastructure.Persistence.Seed;
@@ -20,6 +22,12 @@ public static class DataSeeder
         using var scope = services.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<WorxForgeDbContext>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<IDataSeeder>>();
+
+        if (scope.ServiceProvider.GetRequiredService<IOptions<GuestAccessOptions>>().Value.Enabled)
+        {
+            // Required for guest writes: do not start with a missing foreign-key identity.
+            await new GuestUserSeeder().SeedAsync(context, cancellationToken);
+        }
 
         foreach (var seeder in Seeders)
         {

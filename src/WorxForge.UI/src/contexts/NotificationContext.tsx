@@ -1,6 +1,7 @@
-﻿import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { PropsWithChildren } from "react";
 import { toast } from "sonner";
+import { useAuthContext } from "./AuthContext";
 import { ROUTES } from "../constants/routes.constants";
 import { getAccessToken } from "../services/tokenService";
 import { createNotificationsService } from "../features/notifications/services/notificationsService";
@@ -37,6 +38,7 @@ function buildNotificationTarget(message: NotificationDeliveryMessage): string {
 }
 
 export function NotificationProvider({ children }: PropsWithChildren) {
+  const { isGuestAccess, user } = useAuthContext();
   const [unreadCount, setUnreadCount] = useState(0);
   const [lastNotification, setLastNotification] = useState<NotificationDeliveryMessage | null>(null);
   const notificationsService = useMemo(() => createNotificationsService(), []);
@@ -51,9 +53,8 @@ export function NotificationProvider({ children }: PropsWithChildren) {
       }
     }
 
-    // TODO(future work): re-run this effect on real login/logout transitions once AuthContext
-    // supports them; for now it connects once on mount whenever a token (real or dev) exists.
-    if (!getAccessToken()) {
+    // Guest mode uses the server's shared workspace identity without a bearer token.
+    if (!user || (!isGuestAccess && !getAccessToken())) {
       return;
     }
 
@@ -84,7 +85,7 @@ export function NotificationProvider({ children }: PropsWithChildren) {
     return () => {
       void hubClient.stop();
     };
-  }, [notificationsService]);
+  }, [notificationsService, isGuestAccess, user]);
 
   const value: NotificationContextValue = {
     unreadCount,
@@ -108,5 +109,3 @@ export function NotificationProvider({ children }: PropsWithChildren) {
 export function useNotificationContext(): NotificationContextValue {
   return useContext(NotificationContext);
 }
-
-

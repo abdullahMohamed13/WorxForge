@@ -12,7 +12,7 @@ interface HeroFeature {
 }
 
 const HERO_FEATURES: HeroFeature[] = [
-  { icon: Search, title: "Find", description: "Search across every prompt, agent, and standard in the org." },
+  { icon: Search, title: "Find", description: "Search prompts, agents, and standards shared by the community." },
   { icon: FilePlus2, title: "Create", description: "Create your own prompt, agent, or standard and share it with the team." },
   { icon: ThumbsUp, title: "React", description: "Tell the community what worked — and what didn't." },
   { icon: SquarePen, title: "Improve", description: "Suggest updates or publish your own to help the team." }
@@ -33,7 +33,7 @@ export function HeroSection() {
       <h1 className="mt-5 text-3xl font-bold tracking-tight md:text-4xl">What knowledge do you need?</h1>
 
       <p className="mt-3 text-muted-foreground">
-        The Knowledge Hub inside WorxGPT — every prompt, agent, standard, and workflow your team has built, in one
+        An open knowledge hub — every prompt, agent, standard, and workflow your team has built, in one
         searchable place.
       </p>
 

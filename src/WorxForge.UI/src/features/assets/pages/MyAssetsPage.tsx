@@ -37,7 +37,7 @@ export function MyAssetsPage() {
     <div className="mx-auto flex flex-col gap-6 px-4 py-10 sm:px-6 lg:py-14">
       <div>
         <h1 className="text-2xl font-bold">My Assets</h1>
-        <p className="text-sm text-muted-foreground">Assets you've published to WorxForge.</p>
+        <p className="text-sm text-muted-foreground">Assets you've published to Knowledge Hub.</p>
       </div>
 
       {isError && (

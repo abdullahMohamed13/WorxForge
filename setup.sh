@@ -90,10 +90,10 @@ if [[ "$RUN_BACKEND" == "true" ]]; then
 
     SECRETS_LIST=$(dotnet user-secrets list --project "$API_PROJECT" 2>/dev/null || true)
 
-    declare -a SECRET_KEYS=( "ConnectionStrings:DefaultConnection" "Cors:AllowedOrigins:0" "Authentication:Google:ClientId" )
-    declare -a SECRET_DESCS=( "SQL Server connection string" "Frontend origin allowed by CORS (no trailing slash)" "Google OAuth 2.0 Client ID (needed for real Google sign-in; debug-login works without it)" )
-    declare -a SECRET_EXAMPLES=( "Server=localhost;Database=WorxForge;Trusted_Connection=True;TrustServerCertificate=True" "http://localhost:5173" "123456789-abc.apps.googleusercontent.com" )
-    declare -a SECRET_OPTIONAL=( "false" "false" "true" )
+    declare -a SECRET_KEYS=( "ConnectionStrings:DefaultConnection" "Cors:AllowedOrigins:0" )
+    declare -a SECRET_DESCS=( "SQL Server connection string" "Frontend origin allowed by CORS (no trailing slash)" )
+    declare -a SECRET_EXAMPLES=( "Server=localhost;Database=WorxForge;Trusted_Connection=True;TrustServerCertificate=True" "http://localhost:5173" )
+    declare -a SECRET_OPTIONAL=( "false" "false" )
 
     for i in "${!SECRET_KEYS[@]}"; do
         key="${SECRET_KEYS[$i]}"
@@ -163,7 +163,7 @@ if [[ "$RUN_BACKEND" == "true" ]]; then
     echo -e "${GREEN}  Backend setup complete.${RESET}"
     info "  Run the API:  cd src/WorxForge.API  ->  dotnet run"
     info "  Swagger:      https://localhost:7235/swagger  (or http://localhost:5222/swagger)"
-    info "  Dev JWT:      POST /api/authentication/debug-login"
+    info "  Guest access: enabled; no login or SMTP account is required."
     echo ""
 fi
 
@@ -261,18 +261,9 @@ if [[ "$RUN_FRONTEND" == "true" ]]; then
         read -r -p "    Value [https://localhost:7235]: " PROXY_TARGET
         PROXY_TARGET="${PROXY_TARGET:-https://localhost:7235}"
 
-        # -- VITE_GOOGLE_CLIENT_ID ---------------------------------------------
-        echo ""
-        echo -e "${WHITE}  VITE_GOOGLE_CLIENT_ID${RESET}"
-        gray "Google OAuth 2.0 Client ID from Google Cloud Console."
-        gray "Required for the Google Sign-In button to render."
-        gray "Example: 123456789-abc.apps.googleusercontent.com"
-        read -r -p "    Value: " GOOGLE_CLIENT_ID
-
-        # Write values into .env.local using sed in-place
+        # TODO: Login is skipped pending adding an SMTP account.
         sed -i "s|^VITE_API_BASE_URL=.*|VITE_API_BASE_URL=${API_BASE_URL}|"         "$ENV_LOCAL"
         sed -i "s|^VITE_API_PROXY_TARGET=.*|VITE_API_PROXY_TARGET=${PROXY_TARGET}|" "$ENV_LOCAL"
-        sed -i "s|^VITE_GOOGLE_CLIENT_ID=.*|VITE_GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}|" "$ENV_LOCAL"
 
         ok "Created .env.local."
         echo ""

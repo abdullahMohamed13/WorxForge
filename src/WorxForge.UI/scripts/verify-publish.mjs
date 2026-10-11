@@ -21,18 +21,18 @@ async function request(path, init, expectedStatuses) {
   }
 }
 
-const login = await request(
-  "/api/authentication/debug-login",
-  { method: "POST", headers: { Accept: "application/json" } },
-  [200]
-);
-const accessToken = login.body?.accessToken;
-assert.equal(typeof accessToken, "string", "Debug login did not return accessToken.");
-
-const authenticatedHeaders = {
-  Accept: "application/json",
-  Authorization: `Bearer ${accessToken}`
-};
+const accessMode = await request("/api/authentication/access-mode", undefined, [200]);
+const authenticatedHeaders = { Accept: "application/json" };
+if (!accessMode.body?.guestAccessEnabled) {
+  const login = await request(
+    "/api/authentication/debug-login",
+    { method: "POST", headers: { Accept: "application/json" } },
+    [200]
+  );
+  assert.equal(typeof login.body?.accessToken, "string", "Debug login did not return accessToken.");
+  authenticatedHeaders.Authorization = `Bearer ${login.body.accessToken}`;
+}
+// Guest mode verifies the full lifecycle without a login account or bearer token.
 
 const [assetTypes, domains, useCases, tools] = await Promise.all([
   request("/api/assets/types", undefined, [200]),
@@ -74,7 +74,7 @@ const createBody = {
 
 let assetId;
 const result = {
-  loginStatus: login.response.status,
+  guestAccess: accessMode.body.guestAccessEnabled,
   uploadStatus: upload.response.status
 };
 

@@ -21,6 +21,16 @@ export function GoogleSignInButton({ disabled = false, onCredentialReceived }: G
       return;
     }
 
+    // Guest navigation never loads an external identity SDK.
+    if (!window.google?.accounts?.id && !document.getElementById("google-identity-sdk")) {
+      const script = document.createElement("script");
+      script.id = "google-identity-sdk";
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.head.appendChild(script);
+    }
+
     let isDisposed = false;
     let retryHandle: ReturnType<typeof window.setTimeout> | undefined;
 
