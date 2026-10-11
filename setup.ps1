@@ -193,7 +193,8 @@ if ($runBackend) {
             'database', 'update',
             '--project', $InfraProject,
             '--startup-project', $ApiProject,
-            '--context', 'WorxForge.Infrastructure.Configuration.WorxForgeDbContext'
+            '--context', 'WorxForge.Infrastructure.Configuration.WorxForgeDbContext',
+            '--', '--environment', 'Development'
         )
         dotnet ef @efArgs
         if ($LASTEXITCODE -ne 0) {
@@ -203,12 +204,12 @@ if ($runBackend) {
         Write-Ok 'Database migrations applied.'
     } else {
         Write-Info 'Skipped migrations. Run them when your database is ready:'
-        Write-Info '  dotnet ef database update --project src\WorxForge.Infrastructure --startup-project src\WorxForge.API --context WorxForge.Infrastructure.Configuration.WorxForgeDbContext'
+        Write-Info '  dotnet ef database update --project src\WorxForge.Infrastructure --startup-project src\WorxForge.API --context WorxForge.Infrastructure.Configuration.WorxForgeDbContext -- --environment Development'
     }
 
     Write-Host ''
     Write-Host '  Backend setup complete.' -ForegroundColor Green
-    Write-Info '  Run the API:  cd src\WorxForge.API  ->  dotnet run'
+    Write-Info '  Run the API:  cd src\WorxForge.API  ->  dotnet run --launch-profile https'
     Write-Info '  Swagger:      https://localhost:7235/swagger  (or http://localhost:5222/swagger)'
     Write-Info '  Guest access: enabled; no login or SMTP account is required.'
     Write-Host ''
@@ -307,7 +308,7 @@ if ($runFrontend) {
             if ([string]::IsNullOrWhiteSpace($proxyTarget)) { $proxyTarget = 'https://localhost:7235' }
 
             Write-Host ''
-            # TODO: Login is skipped pending adding an SMTP account.
+            # TODO: Login is skipped pending configuring an auth provider.
 
             $envContent = $envContent -replace '(?m)^(VITE_API_BASE_URL=).*$',     "VITE_API_BASE_URL=$apiBaseUrl"
             $envContent = $envContent -replace '(?m)^(VITE_API_PROXY_TARGET=).*$', "VITE_API_PROXY_TARGET=$proxyTarget"

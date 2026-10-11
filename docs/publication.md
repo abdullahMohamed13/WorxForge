@@ -1,28 +1,46 @@
 # Publication notes
 
-The source tree is prepared for a new public knowledgebase repository. The proposed
-MIT license names ITWORX as copyright holder and requires retaining its copyright
-and permission notices. Review that proposed license before publishing.
+The source includes the MIT license naming ITWORX as copyright holder. Retain the
+copyright and permission notices when redistributing it; see [LICENSE](../LICENSE).
 
-Publish a clean source snapshot with a new Git history. Do not publish the original
-private clone's `.git` directory or historical branches: previous commits can retain
-removed development configuration and private reference documents. If retaining
-history is required, sanitize every published ref and audit it separately first.
-Any previously used real signing key or credential must be replaced at its service.
+## Choose a clean publication source
 
-The clean source archive excludes Git metadata, local environment files, User Secrets,
-dependencies, build outputs, and removed private reference documents. Keep private
-backups outside the public repository. Configure a fresh database with demo/public
-content rather than exporting an existing knowledgebase.
+The existing private clone retains earlier commits containing removed private
+reference documents and development configuration. Do not make that history
+public without sanitizing and auditing every published ref, including branches
+and tags. Pushing sanitized files to the private remote does not clean old commits.
+Any real credential or signing key previously used must be replaced at its service.
 
-Before publication, run backend build/tests with the pinned SDK, frontend lint/tests/
-build, and dependency audits. Inspect the final source snapshot for credentials and
-private data. Known validation limitations are recorded in the handoff report.
+For a new public repository, publish only a reviewed source snapshot with a new
+Git history. If using the prepared source ZIP, extract it into an empty directory
+and initialize a new Git repository there. Do not copy the original `.git`
+directory, private backups, local configuration, dependencies, or build output.
 
-The ignore rules exclude private/local files and the removed reference paths from
-future additions. They do not untrack existing files or erase earlier Git history.
-Sanitized appsettings and `.env.example` remain public configuration templates;
-keep real values in User Secrets, environment variables, or ignored local files.
+## Review the snapshot
 
-Pushing updates to the existing private remote retains its historical commits.
-Publishing publicly requires the separate clean-history step described above.
+1. Check the final file list and content for credentials, account details,
+   private documents, and organization knowledge assets.
+2. Keep real settings in User Secrets, environment variables, or ignored local
+   files. Sanitized appsettings and `.env.example` are public templates.
+3. Keep private backups, source archives, validation tools, logs, database exports,
+   dependencies, and build outputs outside the published source.
+4. Run the backend/frontend checks and dependency audits listed in the
+   [README](../README.md#validation). Record any remaining skipped tests or
+   unfinished features; see [feature status](feature-status.md).
+5. Configure a fresh database with public/demo content. Every visitor shares the
+   guest identity, including the ability to edit/delete guest-owned assets.
+6. Check the repository description uses the WorxForge branding and that the
+   README, license, and setup instructions are included.
+
+The ignore rules prevent future additions of known private/local files. They do
+not untrack already committed files or erase Git history. Inspect both the
+published snapshot and any history you intend to retain.
+
+## Source publication and app hosting
+
+Publishing the source does not deploy the application. Hosting requires SQL Server,
+schema migrations, an API connection string, a frontend origin in CORS, HTTPS,
+and routing for the frontend/API/SignalR endpoints. Guest access is enabled by
+default in every environment; authentication and account completion are separate
+work. Email delivery remains a successful no-op until an SMTP sender is implemented
+and registered and an account is configured.

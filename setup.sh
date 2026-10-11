@@ -152,16 +152,17 @@ if [[ "$RUN_BACKEND" == "true" ]]; then
         dotnet ef database update \
             --project "$INFRA_PROJECT" \
             --startup-project "$API_PROJECT" \
-            --context "WorxForge.Infrastructure.Configuration.WorxForgeDbContext"
+            --context "WorxForge.Infrastructure.Configuration.WorxForgeDbContext" \
+            -- --environment Development
         ok "Database migrations applied."
     else
         info "Skipped migrations. Run them when your database is ready:"
-        info "  dotnet ef database update --project src/WorxForge.Infrastructure --startup-project src/WorxForge.API --context WorxForge.Infrastructure.Configuration.WorxForgeDbContext"
+        info "  dotnet ef database update --project src/WorxForge.Infrastructure --startup-project src/WorxForge.API --context WorxForge.Infrastructure.Configuration.WorxForgeDbContext -- --environment Development"
     fi
 
     echo ""
     echo -e "${GREEN}  Backend setup complete.${RESET}"
-    info "  Run the API:  cd src/WorxForge.API  ->  dotnet run"
+    info "  Run the API:  cd src/WorxForge.API  ->  dotnet run --launch-profile https"
     info "  Swagger:      https://localhost:7235/swagger  (or http://localhost:5222/swagger)"
     info "  Guest access: enabled; no login or SMTP account is required."
     echo ""
@@ -261,7 +262,7 @@ if [[ "$RUN_FRONTEND" == "true" ]]; then
         read -r -p "    Value [https://localhost:7235]: " PROXY_TARGET
         PROXY_TARGET="${PROXY_TARGET:-https://localhost:7235}"
 
-        # TODO: Login is skipped pending adding an SMTP account.
+        # TODO: Login is skipped pending configuring an auth provider.
         sed -i "s|^VITE_API_BASE_URL=.*|VITE_API_BASE_URL=${API_BASE_URL}|"         "$ENV_LOCAL"
         sed -i "s|^VITE_API_PROXY_TARGET=.*|VITE_API_PROXY_TARGET=${PROXY_TARGET}|" "$ENV_LOCAL"
 
