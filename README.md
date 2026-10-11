@@ -17,8 +17,9 @@ The API uses a synthetic **Community Guest** workspace identity with no email
 address or credentials. All visitors share its profile, assets, bookmarks,
 reactions, and notifications. Use a fresh database containing public/demo data.
 
-**TODO: Login is skipped pending adding an SMTP account and completing account
-flows. Email notifications are skipped pending adding an SMTP account.**
+**TODO: Login is temporarily skipped until an authentication provider is configured
+and account flows are completed. Email notifications are skipped until an SMTP
+account is configured.**
 
 Email delivery is registered as a successful no-op: no SMTP network connection,
 sender address, or password is required. In-app notifications remain stored in
