@@ -85,6 +85,20 @@ public sealed class GlobalExceptionHandlerTests
         body.GetProperty("message").GetString().Should().NotContain("SigningKey");
     }
 
+    [Fact]
+    public async Task TryHandleAsync_AbortedRequest_DoesNotWriteAnErrorResponse()
+    {
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+        var context = new DefaultHttpContext { RequestAborted = cancellation.Token };
+        context.Response.Body = new MemoryStream();
+        var handled = await Handler.TryHandleAsync(context,
+            new InvalidOperationException("Database read aborted after navigation"), cancellation.Token);
+        handled.Should().BeTrue();
+        context.Response.StatusCode.Should().Be(StatusCodes.Status499ClientClosedRequest);
+        context.Response.Body.Length.Should().Be(0);
+    }
+
     private static async Task<(int StatusCode, JsonElement Body)> InvokeAsync(Exception exception)
     {
         var context = new DefaultHttpContext

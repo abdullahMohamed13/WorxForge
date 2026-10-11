@@ -4,7 +4,8 @@ export const NotificationType = {
   CommentOnAsset: 0,
   CommentReply: 1,
   PostLiked: 2,
-  PostDisliked: 3,
+  // Retired value: ignore historical negative feedback without renumbering types.
+  RetiredPostDisliked: 3,
   Announcement: 4,
   Unknown: -1
 } as const;

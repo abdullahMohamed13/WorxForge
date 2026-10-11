@@ -106,7 +106,7 @@ export function PublicProfilePage() {
             <p className="mt-1 text-2xl font-semibold text-text">{publishedAssetsCount}</p>
           </div>
           <div className="rounded-xl border border-secondary/30 bg-white p-4">
-            <p className="text-xs text-muted-foreground">Reactions received</p>
+            <p className="text-xs text-muted-foreground">Useful feedback received</p>
             <p className="mt-1 text-2xl font-semibold text-text">{profile.statistics.totalReactionsReceived}</p>
           </div>
         </div>

@@ -1,6 +1,6 @@
 ﻿namespace WorxForge.Domain.Commands.Comments;
 
-// TODO: Confirm reaction type taxonomy with product owner.
+// Useful feedback retains the Like value for existing clients and stored rows.
 public sealed class ReactToAssetCommand
 {
     public Guid UserId { get; init; }

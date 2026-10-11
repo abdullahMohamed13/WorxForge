@@ -102,8 +102,7 @@ function mapRecordToAssetDetails(source: UnknownRecord): AssetDetails {
     createdAt: toStringValue(source.createdAt),
     updatedAt: toStringValue(source.updatedAt),
     likeCount: toNumberValue(source.likeCount),
-    dislikeCount: toNumberValue(source.dislikeCount),
-    currentUserReaction: toStringValue(source.currentUserReaction) as "Like" | "Dislike" | undefined,
+    currentUserReaction: source.currentUserReaction === "Like" ? "Like" : undefined,
     commentCount: toNumberValue(source.commentCount),
     isBookmarked: toBooleanValue(source.isBookmarked),
     markdownContent: toStringValue(source.markdownContent),
@@ -173,7 +172,7 @@ function toPreviewSummary(source: UnknownRecord): AssetSummary {
     authorDisplayName: toStringValue(source.authorDisplayName) || "You",
     createdAt: toStringValue(source.createdAt) || new Date().toISOString(),
     updatedAt: toStringValue(source.updatedAt) || new Date().toISOString(),
-    reactionCount: typeof source.reactionCount === "number" ? source.reactionCount : 0,
+    reactionCount: typeof source.reactionCount === "number" ? source.reactionCount : toNumberValue(source.likeCount),
     commentCount: typeof source.commentCount === "number" ? source.commentCount : 0,
     isBookmarked: typeof source.isBookmarked === "boolean" ? source.isBookmarked : false
   };
@@ -291,7 +290,6 @@ async function fetchLookupItems(
 function toAssetDetails(details: AssetEditorData): AssetDetails {
   return {
     ...details.preview,
-    dislikeCount: 0,
     likeCount: 0,
     currentUserReaction: undefined,
     markdownContent: details.markdownContent,

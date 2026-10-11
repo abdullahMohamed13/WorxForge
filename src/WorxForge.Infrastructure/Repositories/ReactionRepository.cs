@@ -15,27 +15,22 @@ public sealed class ReactionRepository(WorxForgeDbContext dbContext) : IReaction
             .SingleOrDefaultAsync(reaction => reaction.UserId == userId && reaction.AssetId == assetId, cancellationToken);
 
     public Task<int> CountByAssetAsync(Guid assetId, CancellationToken cancellationToken) =>
-        dbContext.Reactions.CountAsync(reaction => reaction.AssetId == assetId, cancellationToken);
+        dbContext.Reactions.CountAsync(reaction => reaction.AssetId == assetId && reaction.ReactionType == ReactionTypes.Like, cancellationToken);
 
     public async Task<AssetReactionDto> GetSummaryAsync(Guid assetId, Guid userId, CancellationToken cancellationToken)
     {
         var reactions = await dbContext.Reactions
             .AsNoTracking()
-            .Where(reaction => reaction.AssetId == assetId)
+            .Where(reaction => reaction.AssetId == assetId && reaction.ReactionType == ReactionTypes.Like)
             .ToListAsync(cancellationToken);
 
-        var currentUserReaction = reactions
-            .FirstOrDefault(reaction => reaction.UserId == userId)?
-            .ReactionType;
-
-        var likeCount = reactions.Count(reaction => string.Equals(reaction.ReactionType, ReactionTypes.Like, StringComparison.Ordinal));
-        var dislikeCount = reactions.Count(reaction => string.Equals(reaction.ReactionType, ReactionTypes.Dislike, StringComparison.Ordinal));
+        var currentUserReaction = reactions.Any(reaction => reaction.UserId == userId) ? ReactionTypes.Like : null;
+        var likeCount = reactions.Count;
 
         return new AssetReactionDto
         {
             AssetId = assetId,
             LikeCount = likeCount,
-            DislikeCount = dislikeCount,
             TotalCount = reactions.Count,
             CurrentUserReaction = currentUserReaction
         };

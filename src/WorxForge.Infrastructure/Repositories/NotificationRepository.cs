@@ -16,7 +16,8 @@ public sealed class NotificationRepository(WorxForgeDbContext dbContext) : INoti
     {
         var query = dbContext.Notifications
             .AsNoTracking()
-            .Where(notification => notification.RecipientUserId == userId);
+            .Where(notification => notification.RecipientUserId == userId
+                && notification.Type != nameof(NotificationType.PostDisliked) && notification.Type != "3");
 
         if (isRead.HasValue)
         {
@@ -33,7 +34,9 @@ public sealed class NotificationRepository(WorxForgeDbContext dbContext) : INoti
             {
                 NotificationId = notification.NotificationId,
                 Type = ParseNotificationType(notification.Type),
-                Message = notification.Message,
+                Message = notification.Type == nameof(NotificationType.PostLiked)
+                    ? notification.Message.Replace("liked your post", "found your asset useful")
+                    : notification.Message,
                 AssetId = notification.AssetId,
                 CommentId = notification.CommentId,
                 IsRead = notification.IsRead,
@@ -48,7 +51,8 @@ public sealed class NotificationRepository(WorxForgeDbContext dbContext) : INoti
         Enum.TryParse<NotificationType>(type, out var parsed) ? parsed : NotificationType.Unknown;
 
     public Task<int> GetUnreadCountAsync(Guid userId, CancellationToken cancellationToken) =>
-        dbContext.Notifications.CountAsync(notification => notification.RecipientUserId == userId && !notification.IsRead, cancellationToken);
+        dbContext.Notifications.CountAsync(notification => notification.RecipientUserId == userId && !notification.IsRead
+            && notification.Type != nameof(NotificationType.PostDisliked) && notification.Type != "3", cancellationToken);
 
     public async Task AddAsync(Notification notification, CancellationToken cancellationToken)
     {

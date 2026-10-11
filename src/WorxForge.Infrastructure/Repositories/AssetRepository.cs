@@ -247,26 +247,13 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
             .Join(dbContext.Tags, assetTag => assetTag.TagId, tag => tag.TagId, (assetTag, tag) => tag.Name)
             .ToListAsync(cancellationToken);
 
-        var reactionCounts = await dbContext.Reactions
-    .AsNoTracking()
-    .Where(reaction => reaction.AssetId == asset.AssetId)
-    .GroupBy(reaction => reaction.ReactionType)
-    .Select(group => new { ReactionType = group.Key, Count = group.Count() })
-    .ToListAsync(cancellationToken);
-
-        var likeCount = reactionCounts
-            .Where(group => group.ReactionType == ReactionTypes.Like)
-            .Select(group => group.Count)
-            .SingleOrDefault();
-
-        var dislikeCount = reactionCounts
-            .Where(group => group.ReactionType == ReactionTypes.Dislike)
-            .Select(group => group.Count)
-            .SingleOrDefault();
+        // Retired negative feedback stays in storage but never contributes to Useful counts.
+        var likeCount = await dbContext.Reactions
+            .CountAsync(reaction => reaction.AssetId == asset.AssetId && reaction.ReactionType == ReactionTypes.Like, cancellationToken);
 
         var currentUserReaction = await dbContext.Reactions
             .AsNoTracking()
-            .Where(reaction => reaction.AssetId == asset.AssetId && reaction.UserId == requestingUserId)
+            .Where(reaction => reaction.AssetId == asset.AssetId && reaction.UserId == requestingUserId && reaction.ReactionType == ReactionTypes.Like)
             .Select(reaction => (string?)reaction.ReactionType)
             .SingleOrDefaultAsync(cancellationToken);
 
@@ -301,7 +288,6 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
             CreatedAt = asset.CreatedAt,
             UpdatedAt = asset.UpdatedAt,
             LikeCount = likeCount,
-            DislikeCount = dislikeCount,
             CurrentUserReaction = currentUserReaction,
             CommentCount = commentCount,
             ViewCount = viewCount,
@@ -389,7 +375,7 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
                 .First(),
             CreatedAt = asset.CreatedAt,
             UpdatedAt = asset.UpdatedAt,
-            ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId),
+            ReactionCount = dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId && reaction.ReactionType == ReactionTypes.Like),
             CommentCount = dbContext.Comments.Count(comment => comment.AssetId == asset.AssetId && comment.DeletedAt == null),
             IsBookmarked = dbContext.Bookmarks.Any(bookmark => bookmark.AssetId == asset.AssetId && bookmark.UserId == userId)
         });
@@ -468,7 +454,7 @@ public sealed class AssetRepository(WorxForgeDbContext dbContext) : IAssetReposi
                     + (bookmarkedAssetAffinities.Count(affinity => affinity.DomainId == asset.DomainId) * AssetRecommendationConstants.BookmarkWeight)) * AssetRecommendationConstants.DomainMatchWeight
                 + ((likedAssetAffinities.Count(affinity => affinity.AssetTypeId == asset.AssetTypeId) * AssetRecommendationConstants.LikeWeight)
                     + (bookmarkedAssetAffinities.Count(affinity => affinity.AssetTypeId == asset.AssetTypeId) * AssetRecommendationConstants.BookmarkWeight)) * AssetRecommendationConstants.TypeMatchWeight)
-            .ThenByDescending(asset => dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId))
+            .ThenByDescending(asset => dbContext.Reactions.Count(reaction => reaction.AssetId == asset.AssetId && reaction.ReactionType == ReactionTypes.Like))
             .ThenByDescending(asset => asset.CreatedAt)
             .Take(limit);
 

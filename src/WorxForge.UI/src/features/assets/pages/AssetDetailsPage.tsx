@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { FaCopy, FaDownload, FaRegThumbsDown, FaRegThumbsUp, FaShareAlt } from "react-icons/fa";
+import { FaCopy, FaDownload, FaRegThumbsUp, FaShareAlt } from "react-icons/fa";
 import ReactMarkdown from "react-markdown";
 import type { Components } from "react-markdown";
 import { Link, useLocation, useParams } from "react-router-dom";
@@ -8,7 +8,7 @@ import { ROUTES } from "../../../constants/routes.constants";
 import { useAssetDetails } from "../hooks/useAssetDetails";
 import { AssetRequestError } from "../services/assetsService";
 import { useBookmark } from "../hooks/useBookmark";
-import { useAssetReaction, type ReactionType } from "../hooks/useAssetReaction";
+import { useAssetReaction } from "../hooks/useAssetReaction";
 import { AssetCommentsSection } from "../../comments/components/AssetCommentsSection";
 
 type PrimaryTab = "overview" | "discussion";
@@ -72,10 +72,7 @@ export function AssetDetailsPage() {
     return match?.[1];
   }, [location.hash]);
 
-  const [userReaction, setUserReaction] = useState<ReactionType | null>(null);
-  const [likeCount, setLikeCount] = useState(0);
-  const [dislikeCount, setDislikeCount] = useState(0);
-  const { mutate: toggleReaction } = useAssetReaction();
+  const { mutate: toggleReaction, isPending: isReactionPending } = useAssetReaction();
 
   const [primaryTab, setPrimaryTab] = useState<PrimaryTab>("overview");
   const [markdownTab, setMarkdownTab] = useState<MarkdownTab>("rendered");
@@ -92,12 +89,6 @@ export function AssetDetailsPage() {
   useEffect(() => {
     setIsSaved(asset?.isBookmarked ?? false);
   }, [asset?.isBookmarked]);
-
-  useEffect(() => {
-    setLikeCount(asset?.likeCount ?? 0);
-    setDislikeCount(asset?.dislikeCount ?? 0);
-    setUserReaction((asset?.currentUserReaction as ReactionType | null) ?? null);
-  }, [asset?.likeCount, asset?.dislikeCount, asset?.currentUserReaction]);
 
   if (isLoading) {
     return (
@@ -154,48 +145,14 @@ export function AssetDetailsPage() {
     URL.revokeObjectURL(url);
   };
 
-  const handleReactionClick = (type: ReactionType) => {
-    if (!assetId) return;
-
-    const previousReaction = userReaction;
-    const previousLikeCount = likeCount;
-    const previousDislikeCount = dislikeCount;
-
-    let nextReaction: ReactionType | null;
-    let nextLikeCount = likeCount;
-    let nextDislikeCount = dislikeCount;
-
-    if (previousReaction === type) {
-      // clicking the active reaction again un-reacts (matches API toggle-off)
-      nextReaction = null;
-      if (type === "Like") {
-        nextLikeCount -= 1;
-      } else {
-        nextDislikeCount -= 1;
-      }
-    } else {
-      nextReaction = type;
-      if (type === "Like") {
-        nextLikeCount += 1;
-        if (previousReaction === "Dislike") nextDislikeCount -= 1;
-      } else {
-        nextDislikeCount += 1;
-        if (previousReaction === "Like") nextLikeCount -= 1;
-      }
-    }
-
-    setUserReaction(nextReaction);
-    setLikeCount(nextLikeCount);
-    setDislikeCount(nextDislikeCount);
+  const handleReactionClick = () => {
+    if (!assetId || isReactionPending) return;
 
     toggleReaction(
-      { assetId, reactionType: type },
+      { assetId, reactionType: "Like" },
       {
         onError: () => {
-          setUserReaction(previousReaction);
-          setLikeCount(previousLikeCount);
-          setDislikeCount(previousDislikeCount);
-          toast.error("Failed to update reaction. Please try again.");
+          toast.error("Failed to update Useful feedback. Please try again.");
         }
       }
     );
@@ -256,40 +213,25 @@ export function AssetDetailsPage() {
 
         <div className="mt-4 flex flex-wrap gap-2">
           <div className="inline-flex w-24 flex-col items-center rounded-xl border border-secondary/30 bg-primary/10 p-2 text-center">
-            <span className="text-xl font-semibold text-primary">+{likeCount}</span>
-            <span className="text-[11px] text-text/60">helpful</span>
-          </div>
-          <div className="inline-flex w-24 flex-col items-center rounded-xl border border-secondary/30 bg-secondary/20 p-2 text-center">
-            <span className="text-xl font-semibold text-text">-{dislikeCount}</span>
-            <span className="text-[11px] text-text/60">not useful</span>
+            <span className="text-xl font-semibold text-primary">{asset.likeCount}</span>
+            <span className="text-[11px] text-text/60">Useful</span>
           </div>
         </div>
 
         <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-secondary/30 pt-4">
           <button
             type="button"
-            onClick={() => handleReactionClick("Like")}
-            aria-pressed={userReaction === "Like"}
-            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${userReaction === "Like"
+            onClick={handleReactionClick}
+            disabled={isReactionPending}
+            aria-busy={isReactionPending}
+            aria-pressed={asset.currentUserReaction === "Like"}
+            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-wait disabled:opacity-60 ${asset.currentUserReaction === "Like"
                 ? "border-primary bg-primary/10 text-primary"
                 : "border-secondary/30 bg-white text-text hover:bg-primary/10"
               }`}
           >
             <FaRegThumbsUp className="size-3.5" aria-hidden="true" />
-            Like
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleReactionClick("Dislike")}
-            aria-pressed={userReaction === "Dislike"}
-            className={`inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary ${userReaction === "Dislike"
-                ? "border-primary bg-primary/10 text-primary"
-                : "border-secondary/30 bg-white text-text hover:bg-primary/10"
-              }`}
-          >
-            <FaRegThumbsDown className="size-3.5" aria-hidden="true" />
-            Dislike
+            Useful
           </button>
 
           <button

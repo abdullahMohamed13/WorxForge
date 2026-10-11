@@ -15,6 +15,17 @@ public sealed class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logge
 {
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
+        // Navigating away/refetching can cancel SQL reads. The client is already gone;
+        // do not log a server failure or try to write JSON using a canceled token.
+        if (httpContext.RequestAborted.IsCancellationRequested)
+        {
+            if (!httpContext.Response.HasStarted)
+            {
+                httpContext.Response.StatusCode = StatusCodes.Status499ClientClosedRequest;
+            }
+            return true;
+        }
+
         var (statusCode, response) = BuildResponse(exception);
 
         if (statusCode == StatusCodes.Status500InternalServerError)

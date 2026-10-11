@@ -155,4 +155,29 @@ public sealed class CommentsValidatorsTests
 
         await act.Should().NotThrowAsync();
     }
+    [Theory]
+    [InlineData("Like")]
+    [InlineData("like")]
+    public async Task ReactionValidator_AcceptsUsefulCompatibilityValue(string reactionType)
+    {
+        await new ReactToAssetCommandValidator().ValidateAsync(new ReactToAssetCommand
+        {
+            UserId = Guid.NewGuid(), AssetId = Guid.NewGuid(), ReactionType = reactionType
+        }, CancellationToken.None);
+    }
+
+    [Theory]
+    [InlineData("Dislike")]
+    [InlineData("dislike")]
+    [InlineData("")]
+    public async Task ReactionValidator_RejectsRetiredOrEmptyFeedback(string reactionType)
+    {
+        var command = new ReactToAssetCommand
+        {
+            UserId = Guid.NewGuid(), AssetId = Guid.NewGuid(), ReactionType = reactionType
+        };
+        await Assert.ThrowsAsync<RequestValidationException>(() =>
+            new ReactToAssetCommandValidator().ValidateAsync(command, CancellationToken.None));
+    }
+
 }

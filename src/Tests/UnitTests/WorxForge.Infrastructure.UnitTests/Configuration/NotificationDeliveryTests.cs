@@ -31,4 +31,17 @@ public sealed class NotificationDeliveryTests
         queue.Verify(item => item.QueueNotification(It.Is<NotificationDeliveryMessage>(notification =>
             notification.RecipientUserId == recipient && notification.Message == "Community update")), Times.Once);
     }
+    [Fact]
+    public async Task RetiredNegativeFeedback_IsNotPersistedOrDelivered()
+    {
+        var repository = new Mock<INotificationRepository>();
+        var queue = new Mock<INotificationQueue>();
+        var service = new NotificationService(repository.Object, queue.Object,
+            new DisabledNotificationEmailSender(), NullLogger<NotificationService>.Instance);
+        await service.SendAsync(Guid.NewGuid(), Guid.NewGuid(), NotificationType.PostDisliked,
+            "Historical negative feedback", null, null, CancellationToken.None);
+        Assert.Empty(repository.Invocations);
+        Assert.Empty(queue.Invocations);
+    }
+
 }

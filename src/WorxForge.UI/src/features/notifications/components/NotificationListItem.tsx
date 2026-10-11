@@ -1,4 +1,4 @@
-import { Bell, Loader2, Megaphone, MessageSquare, ThumbsDown, ThumbsUp } from "lucide-react";
+import { Bell, Loader2, Megaphone, MessageSquare, ThumbsUp } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "../../../lib/utils";
 import { formatRelativeTime } from "../../../utils/date.utils";
@@ -8,7 +8,7 @@ const ICONS_BY_TYPE: Record<NotificationType, LucideIcon> = {
   [NotificationType.CommentOnAsset]: MessageSquare,
   [NotificationType.CommentReply]: MessageSquare,
   [NotificationType.PostLiked]: ThumbsUp,
-  [NotificationType.PostDisliked]: ThumbsDown,
+  [NotificationType.RetiredPostDisliked]: Bell,
   [NotificationType.Announcement]: Megaphone,
   [NotificationType.Unknown]: Bell
 };
@@ -21,6 +21,8 @@ interface NotificationListItemProps {
 }
 
 export function NotificationListItem({ notification, isMarking, onOpen, onMarkAsRead }: NotificationListItemProps) {
+  if (notification.type === NotificationType.RetiredPostDisliked) return null;
+
   const Icon = ICONS_BY_TYPE[notification.type] ?? Bell;
   const isNavigable = Boolean(notification.assetId);
 

@@ -6,7 +6,7 @@ import { ROUTES } from "../constants/routes.constants";
 import { getAccessToken } from "../services/tokenService";
 import { createNotificationsService } from "../features/notifications/services/notificationsService";
 import { createNotificationHubClient } from "../features/notifications/services/notificationHubService";
-import type { NotificationDeliveryMessage } from "../features/notifications/models/notifications.models";
+import { NotificationType, type NotificationDeliveryMessage } from "../features/notifications/models/notifications.models";
 
 type NotificationContextValue = {
   unreadCount: number;
@@ -62,6 +62,7 @@ export function NotificationProvider({ children }: PropsWithChildren) {
 
     const hubClient = createNotificationHubClient();
     hubClient.onNotification((message) => {
+      if (message.type === NotificationType.RetiredPostDisliked) return;
       setLastNotification(message);
       if (!message.isRead) {
         const description = message.message.trim();

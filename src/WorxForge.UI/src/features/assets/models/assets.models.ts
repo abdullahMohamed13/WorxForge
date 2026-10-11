@@ -28,8 +28,7 @@ export interface AssetDetails {
   commentCount: number;
   isBookmarked: boolean;
   likeCount: number;
-  dislikeCount: number;
-  currentUserReaction?: "Like" | "Dislike";
+  currentUserReaction?: "Like";
   markdownContent: string;
   useCaseName: string;
   compatibleTools: string[];

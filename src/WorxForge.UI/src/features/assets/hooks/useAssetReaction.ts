@@ -1,11 +1,16 @@
-import { useMutation } from "@tanstack/react-query";
-import { Client } from "../../../api/worxforgeClient";
-import type { ReactToAssetRequest } from "../../../api/worxforgeClient";
-import { createDevAuthenticatedFetch } from "@/api/httpClient";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { httpClient } from "../../../api/httpClient";
+import type { AssetDetails } from "../models/assets.models";
 
-export type ReactionType = "Like" | "Dislike";
+// Like is the compatibility value for the public Useful action.
+export type ReactionType = "Like";
 
-const client = new Client(import.meta.env.VITE_API_BASE_URL, createDevAuthenticatedFetch());
+export interface AssetReactionSummary {
+  assetId: string;
+  likeCount: number;
+  totalCount: number;
+  currentUserReaction: ReactionType | null;
+}
 
 interface ToggleReactionParams {
   assetId: string;
@@ -13,10 +18,27 @@ interface ToggleReactionParams {
 }
 
 export function useAssetReaction() {
+  const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: async ({ assetId, reactionType }: ToggleReactionParams) => {
-      const body: ReactToAssetRequest = { reactionType };
-      await client.reactionPOST(assetId, body);
+    mutationFn: ({ assetId, reactionType }: ToggleReactionParams) =>
+      httpClient.post<AssetReactionSummary>(`/api/assets/${assetId}/reaction`, { reactionType }),
+    onSuccess: async (summary, { assetId }) => {
+      // Use the server count rather than guessing from a potentially stale guest workspace.
+      queryClient.setQueryData<AssetDetails>(["assets", "details", assetId], (asset) => asset && ({
+        ...asset,
+        likeCount: summary.likeCount,
+        currentUserReaction: summary.currentUserReaction ?? undefined
+      }));
+      await Promise.all([
+        ["assets", "details", assetId],
+        ["assets", "editor", "detail", assetId],
+        ["assets", "my-assets"],
+        ["home", "dashboard"],
+        ["explore", "assets"],
+        ["library", "saved"],
+        ["profile"]
+      ].map((queryKey) => queryClient.invalidateQueries({ queryKey })));
     }
   });
 }

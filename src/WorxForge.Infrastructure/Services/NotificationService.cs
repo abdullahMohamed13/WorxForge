@@ -55,7 +55,7 @@ public sealed class NotificationService(
 
     public async Task SendAsync(Guid recipientUserId, Guid? actorUserId, NotificationType type, string message, Guid? assetId, Guid? commentId, CancellationToken cancellationToken)
     {
-        if (recipientUserId == actorUserId)
+        if (recipientUserId == actorUserId || type == NotificationType.PostDisliked)
         {
             return;
         }

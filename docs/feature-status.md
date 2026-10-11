@@ -4,7 +4,7 @@
 
 Home dashboard; explore/search/filter assets; asset details and Markdown preview;
 publish, edit, and delete guest-owned assets; shared library/bookmarks; comments
-and reactions; profile; in-app notifications and SignalR.
+and Useful feedback; profile; in-app notifications and SignalR.
 
 The guest workspace is shared across visitors. Use public/demo content; it has no
 per-user isolation. Visitors can edit/delete guest-owned assets. Existing application
@@ -30,3 +30,12 @@ Completing these features is separate from SMTP integration and configuring an a
 
 SQL Server and schema migrations remain required. The source ships no database
 backup or populated organization knowledgebase.
+
+## Useful feedback
+
+Assets have one public Useful action and count. Click Useful again to remove your
+feedback. The API retains `Like`, `likeCount`, and `reactionCount` as compatibility
+names; these represent positive Useful feedback only. New Dislike requests return
+a validation error. Historical dislikes remain stored but are excluded from counts,
+ranking, current-user selection, and notification lists/unread badges. Existing
+positive feedback is preserved; no database migration or data deletion is required.

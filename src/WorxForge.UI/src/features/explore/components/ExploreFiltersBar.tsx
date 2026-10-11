@@ -26,7 +26,7 @@ const FRESHNESS_OPTIONS = [
 
 const SORT_OPTIONS = [
   { value: "relevance", label: "Relevant" },
-  { value: "helpful", label: "Helpful" },
+  { value: "helpful", label: "Most useful" },
   { value: "added", label: "Added" },
   { value: "updated", label: "Updated" },
   { value: "discussed", label: "Discussed" }

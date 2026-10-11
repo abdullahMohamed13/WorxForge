@@ -14,7 +14,7 @@ organization knowledgebase.
 
 - Explore, search, and filter assets; view asset details and Markdown previews.
 - Publish, edit, and delete guest-owned assets.
-- Bookmark assets in My Library, add comments and reactions, and view your profile.
+- Bookmark assets in My Library, add comments and Useful feedback, and view your profile.
 - Receive in-app notifications through SQL Server persistence and SignalR delivery.
 
 See [feature status](docs/feature-status.md) for available and unfinished features.
@@ -26,7 +26,7 @@ Home, Explore, My Library, My Assets, Publish Asset, Profile, and Notifications
 without signing in. The API supplies a synthetic **Community Guest** identity
 with no email address or credentials.
 
-**All visitors share the guest profile, assets, bookmarks, reactions, and
+**All visitors share the guest profile, assets, bookmarks, Useful feedback, and
 notifications.** Guest-owned assets can be edited or deleted by another visitor.
 Use a fresh database containing public/demo data. Per-user accounts and private
 workspaces require completing authentication and account flows. Administrator

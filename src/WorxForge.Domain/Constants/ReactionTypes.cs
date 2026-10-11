@@ -2,25 +2,19 @@ namespace WorxForge.Domain.Constants;
 
 public static class ReactionTypes
 {
+    // Keep the stored/wire value so existing positive feedback remains valid.
     public const string Like = "Like";
-    public const string Dislike = "Dislike";
 
     public static bool IsSupported(string? reactionType) =>
-        string.Equals(reactionType, Like, StringComparison.OrdinalIgnoreCase) ||
-        string.Equals(reactionType, Dislike, StringComparison.OrdinalIgnoreCase);
+        string.Equals(reactionType, Like, StringComparison.OrdinalIgnoreCase);
 
     public static string Normalize(string reactionType)
     {
-        if (string.Equals(reactionType, Like, StringComparison.OrdinalIgnoreCase))
+        if (IsSupported(reactionType))
         {
             return Like;
         }
 
-        if (string.Equals(reactionType, Dislike, StringComparison.OrdinalIgnoreCase))
-        {
-            return Dislike;
-        }
-
-        throw new ArgumentOutOfRangeException(nameof(reactionType), reactionType, "Unsupported reaction type.");
+        throw new ArgumentOutOfRangeException(nameof(reactionType), reactionType, "Only Useful (Like) feedback is supported.");
     }
 }

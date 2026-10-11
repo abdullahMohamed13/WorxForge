@@ -12,7 +12,7 @@ export function AssetCardStats({ reactionCount, commentCount }: AssetCardStatsPr
         <ReactionIcon className="size-3.5" />
         <span>
           {reactionCount}
-          <span className="sr-only"> reactions</span>
+          <span> Useful</span>
         </span>
       </li>
       <li className="flex items-center gap-1">

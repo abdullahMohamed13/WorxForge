@@ -15,7 +15,7 @@ public static class ExploreEndpointGroup
         group.MapGet("/browse", BrowseAssetsAsync)
             .WithName("BrowseAssets")
             .WithSummary("Browse knowledge assets")
-            .WithDescription("Browses published knowledge assets with optional type, domain, use case, tool, and freshness filters, sortable by relevance, helpful, added, updated, or discussed.")
+            .WithDescription("Browses published knowledge assets with optional type, domain, use case, tool, and freshness filters, sortable by relevance, useful (helpful), added, updated, or discussed.")
             .Produces<PagedResultDto<AssetSummaryDto>>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status401Unauthorized);
         group.MapGet("/filters", GetExploreFiltersAsync)

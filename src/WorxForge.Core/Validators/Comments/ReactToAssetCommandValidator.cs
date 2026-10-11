@@ -23,7 +23,7 @@ public sealed class ReactToAssetCommandValidator : IRequestValidator<ReactToAsse
 
         if (!ReactionTypes.IsSupported(request.ReactionType))
         {
-            errors[nameof(request.ReactionType)] = ["ReactionType must be Like or Dislike."];
+            errors[nameof(request.ReactionType)] = ["ReactionType must be Like (Useful)."];
         }
 
         if (errors.Count > 0)
