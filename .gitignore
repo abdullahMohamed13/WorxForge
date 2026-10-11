@@ -56,3 +56,66 @@ appsettings.*.local.json
 *.mdf
 *.ldf
 *.bak
+
+# Private account / cloud configuration (use environment variables or User Secrets).
+secrets.json
+secrets.*.json
+credentials.json
+credentials.*.json
+*service-account*.json
+.aws/
+.azure/
+.ssh/
+id_rsa
+id_ed25519
+*.p12
+*.p8
+*.kdbx
+
+# Local database content, diagnostic dumps, and generated artifacts.
+*.sqlite*
+*.db
+*.db-journal
+*.db-shm
+*.db-wal
+*.dump
+*.backup
+*.bkp
+*.sql.gz
+database-backups/
+database-dumps/
+*.log
+logs/
+*.dmp
+*.dll
+*.exe
+*.pdb
+*.tsbuildinfo
+.cache/
+.vite/
+artifacts/
+/tmp/
+/temp/
+
+# Archives and handoff / validation folders are not repository source.
+*.zip
+*.7z
+*.rar
+*.tar
+*.tar.gz
+*.tgz
+WorxForge-private-reference-backup/
+WorxForge-public-handoff/
+WorxForge-validation-tools/
+private-docs/
+docs/private/
+
+# Removed internal references must not be accidentally added again.
+/docs/Presentation.pdf
+/docs/WorxForge srs.pdf
+/docs/WorxForge___BRD.pdf
+/docs/WorxForge_db_schema.pdf
+/docs/repository-consolidation.md
+
+# Safe templates stay public. Never put real secrets in tracked appsettings files.
+# Ignoring a path does not erase its earlier Git history.

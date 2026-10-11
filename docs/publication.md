@@ -19,4 +19,10 @@ Before publication, run backend build/tests with the pinned SDK, frontend lint/t
 build, and dependency audits. Inspect the final source snapshot for credentials and
 private data. Known validation limitations are recorded in the handoff report.
 
-No commit, push, repository visibility change, or release is performed by this cleanup.
+The ignore rules exclude private/local files and the removed reference paths from
+future additions. They do not untrack existing files or erase earlier Git history.
+Sanitized appsettings and `.env.example` remain public configuration templates;
+keep real values in User Secrets, environment variables, or ignored local files.
+
+Pushing updates to the existing private remote retains its historical commits.
+Publishing publicly requires the separate clean-history step described above.
