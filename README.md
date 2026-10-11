@@ -42,6 +42,17 @@ sender address, or password is required. Email-change/verification endpoints ret
 Enabling email requires implementing and registering an SMTP sender as well as
 configuring an account; SMTP credentials alone do not enable delivery.
 
+### Upload limits
+
+Markdown uploads accept one `.md` file of up to 5 MB. The API caps the full multipart
+request at 5 MB plus 64 KB before form binding, including chunked requests. Uploads
+are limited to 10 attempts per minute per connection IP; excess attempts return
+HTTP 429 with `Retry-After`. Configure positive `Uploads__PermitLimit` and
+`Uploads__WindowSeconds` values to tune this limit. Other endpoints are unaffected.
+The limiter runs per API instance. Behind a reverse proxy, clients sharing the proxy
+connection IP share its quota; configure trusted proxy handling or edge rate limits
+for the hosting environment rather than trusting arbitrary forwarding headers.
+
 ## Stack and source layout
 
 | Component | Location | Stack |

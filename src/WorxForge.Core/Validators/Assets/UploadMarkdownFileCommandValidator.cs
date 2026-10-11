@@ -1,4 +1,5 @@
 using WorxForge.Core.Abstractions;
+using WorxForge.Domain.Constants;
 using WorxForge.Domain.Commands.Assets;
 using WorxForge.Domain.Exceptions;
 
@@ -6,8 +7,6 @@ namespace WorxForge.Core.Validators.Assets;
 
 public sealed class UploadMarkdownFileCommandValidator : IRequestValidator<UploadMarkdownFileCommand>
 {
-    private const int MaxFileSizeBytes = 5 * 1024 * 1024;
-
     public Task ValidateAsync(UploadMarkdownFileCommand request, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -15,7 +14,7 @@ public sealed class UploadMarkdownFileCommandValidator : IRequestValidator<Uploa
         if (request.FileContent.Length == 0)
             throw new ValidationException("The uploaded file is empty.");
 
-        if (request.FileContent.Length > MaxFileSizeBytes)
+        if (request.FileContent.Length > AssetValidationConstants.MarkdownFileMaxSizeBytes)
             throw new ValidationException("The uploaded file exceeds the 5 MB limit.");
 
         if (!Path.GetExtension(request.FileName).Equals(".md", StringComparison.OrdinalIgnoreCase))

@@ -39,6 +39,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 builder.Services.AddOpenApi();
 builder.Services.AddWorxForgeCors(builder.Configuration);
+builder.Services.AddWorxForgeUploadProtection(builder.Configuration);
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 builder.Services.AddWorxForgeAuthentication(builder.Configuration);

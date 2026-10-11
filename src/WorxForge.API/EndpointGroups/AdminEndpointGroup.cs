@@ -15,7 +15,8 @@ public static class AdminEndpointGroup
 {
     public static RouteGroupBuilder MapAdminEndpoints(this IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("/api/admin");
+        var group = app.MapGroup("/api/admin")
+            .RequireAuthorization(PolicyConstants.AdminOnly);
         group.MapGet("/users", GetAdminUsersAsync);
         group.MapPost("/users", CreateUserByAdminAsync);
         group.MapDelete("/users/{userId:guid}", DeleteUserByAdminAsync);
@@ -23,10 +24,8 @@ public static class AdminEndpointGroup
         group.MapDelete("/assets/{assetId:guid}", DeleteAssetByAdminAsync);
         group.MapGet("/comments", GetAdminCommentsAsync);
         group.MapDelete("/comments/{commentId:guid}", DeleteCommentByAdminAsync);
-        group.MapGet("/reports", GetAdminReportsAsync)
-            .RequireAuthorization(PolicyConstants.AdminOnly);
-        group.MapPut("/reports/{reportId:guid}", ResolveReportByAdminAsync)
-            .RequireAuthorization(PolicyConstants.AdminOnly);
+        group.MapGet("/reports", GetAdminReportsAsync);
+        group.MapPut("/reports/{reportId:guid}", ResolveReportByAdminAsync);
         return group;
     }
 

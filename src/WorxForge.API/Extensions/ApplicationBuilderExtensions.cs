@@ -22,6 +22,8 @@ public static class ApplicationBuilderExtensions
         app.UseCors(CorsConfigurationExtensions.PolicyName);
         app.UseAuthentication();
         app.UseAuthorization();
+        app.UseRateLimiter();
+        app.UseMiddleware<WorxForge.API.Middlewares.RequestBodyLimitMiddleware>();
         return app;
     }
 

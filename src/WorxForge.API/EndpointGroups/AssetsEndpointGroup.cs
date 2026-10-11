@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using WorxForge.API.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using WorxForge.Core.Abstractions;
 using WorxForge.Domain.Dtos.Common;
@@ -37,7 +38,15 @@ public static class AssetsEndpointGroup
 
         group.MapPost("/upload-markdown", UploadMarkdownAsync)
             .RequireAuthorization(PolicyConstants.AuthenticatedUser)
-            .DisableAntiforgery();
+            .DisableAntiforgery()
+            .RequireRateLimiting(UploadConfigurationExtensions.PolicyName)
+            .WithMetadata(
+                new RequestSizeLimitAttribute(UploadConfigurationExtensions.MaxRequestBodySizeBytes),
+                new RequestFormLimitsAttribute
+                {
+                    MultipartBodyLengthLimit = AssetValidationConstants.MarkdownFileMaxSizeBytes,
+                    ValueCountLimit = 1
+                });
 
         group.MapPost("/", CreateAssetAsync)
             .RequireAuthorization(PolicyConstants.AuthenticatedUser);
@@ -121,6 +130,10 @@ public static class AssetsEndpointGroup
         ICommandHandler<UploadMarkdownFileCommand, UploadMarkdownResponse> handler,
         CancellationToken cancellationToken)
     {
+        // Defense in depth: never copy a rejected file into application memory.
+        if (file.Length > AssetValidationConstants.MarkdownFileMaxSizeBytes)
+            return Results.Problem(statusCode: StatusCodes.Status413PayloadTooLarge, title: "The uploaded file exceeds the 5 MB limit.");
+
         using var memoryStream = new MemoryStream();
         await file.CopyToAsync(memoryStream, cancellationToken);
         var bytes = memoryStream.ToArray();
