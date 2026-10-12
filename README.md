@@ -10,6 +10,18 @@ an ASP.NET Core API and a React web app. The source includes generic lookup data
 it does not include external login accounts, mailboxes, credentials, or a populated
 organization knowledgebase.
 
+## [Juniors Can. Here’s the Code.](docs/Whitepaper/WorxForge-Juniors-and-AI-Coding-Agents.pdf)
+
+**Four students. Four weeks. One working application.**
+
+WorxForge originated in ITWorx’s four-week Summer 2026 internship, where four
+computer science undergraduates built and locally demonstrated the application
+using a new stack, senior mentorship, and a **GitHub Copilot Business subscription**.
+The students directed coding agents, tested results, and owned implementation.
+The paper presents an observational case study of that experience.
+
+Publication version **1.5** · **12 pages**.
+
 ## What you can do
 
 - Explore, search, and filter assets; view asset details and Markdown previews.

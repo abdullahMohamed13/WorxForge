@@ -44,3 +44,16 @@ and routing for the frontend/API/SignalR endpoints. Guest access is enabled by
 default in every environment; authentication and account completion are separate
 work. Email delivery remains a successful no-op until an SMTP sender is implemented
 and registered and an account is configured.
+
+## Approved whitepaper
+
+The approved public artifact is
+[Juniors Can. Here’s the Code.](Whitepaper/WorxForge-Juniors-and-AI-Coding-Agents.pdf),
+publication version **1.5**, **12 pages**. Keep its filename and location unchanged.
+
+SHA-256: `e5f26cb7b45091b6bbf6860768aaad49a353a8f4d746f81e5863af7f5fedb840`.
+
+Keep `docs/Whitepaper/` limited to this final PDF. Do not publish editable exports,
+private authoring files, review notes, source requirements, the original training
+workbook, internal academy links, or original screenshots. The approved PDF is
+published as supplied; changes require a separately approved publication artifact.

@@ -24,3 +24,10 @@ Notifications are saved before SignalR delivery is queued. The email sender
 completes without network access while SMTP integration is pending.
 The seed contains only generic asset types, domains, use cases, and tool names.
 Migrations define schema and lookup data; they do not contain user/asset exports.
+
+## Project background
+
+[Juniors Can. Here’s the Code.](Whitepaper/WorxForge-Juniors-and-AI-Coding-Agents.pdf)
+(version 1.5, 12 pages) documents the four-week ITWorx Summer 2026 internship
+that produced WorxForge. See the [README story section](../README.md#juniors-can-heres-the-code)
+for the case-study introduction.
