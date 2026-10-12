@@ -2,6 +2,7 @@
 @import "tw-animate-css";
 
 @theme {
+  --font-sans: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Arial, sans-serif;
   --color-text: #0d0814;
   --color-background: #fcfbfe;
   --color-primary: #7840c3;
@@ -115,8 +116,13 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
+}
+
+/* Sonner declares its own unlayered font family; keep toast text on the interface stack. */
+html [data-sonner-toaster] {
+  font-family: var(--font-sans);
 }
 
 @keyframes wf-sidebar-reveal {

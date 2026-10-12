@@ -23,3 +23,7 @@ Vite forwards `/api` and `/hubs` to the configured proxy target, which defaults 
 `VITE_API_PROXY_TARGET` to match your local API. These development proxies are
 not part of the production build. See the [root README](../../README.md) for
 API/database setup and hosting guidance.
+
+The interface uses locally installed Segoe UI with system sans-serif fallbacks.
+Devices without Segoe UI use the fallback stack; no font files or external font
+service are required. Code editors and Markdown code retain monospace typography.

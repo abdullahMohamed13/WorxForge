@@ -45,12 +45,12 @@ and registered and an account is configured.
 is the approved whitepaper, publication version **1.6**, **11 pages**.
 Keep its filename and location unchanged.
 
-SHA-256: `3b69691ec9b8743492999fa57beae632e294691c49028074fe838e6ef21afd79`.
+SHA-256: `cb639eab1d91295265093817afee9e551014396f7faf322660a9df3a18a0034a`.
 
 The [eight-page case summary](Whitepaper/WorxForge-LinkedIn-Carousel.pdf) is the
 approved carousel.
 
-SHA-256: `3d04a726417ae1d277748f6cbf3c5aa4667592bcb4a181ad1853be93e008c48f`.
+SHA-256: `aaabad782bc3a55eecedc39455f442aa11adde64b98b221905958fe8231cef70`.
 
 Public narrative concerns only the four-student, four-week ITWorx Summer 2026
 internship: the students' AI-assisted project work, technical mentorship, local
