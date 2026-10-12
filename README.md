@@ -1,10 +1,10 @@
 # WorxForge
 
-**The ITWorx AI Assets Hub**
+**An open-source knowledge asset platform.**
 
 Discover · Contribute · Share · Reuse
 
-WorxForge is an open-source AI assets hub for sharing and discovering reusable
+WorxForge is an open-source knowledge asset platform for sharing and discovering reusable
 prompts, agents, skills, workflows, and coding standards. This monorepo contains
 an ASP.NET Core API and a React web app. The source includes generic lookup data;
 it does not include external login accounts, mailboxes, credentials, or a populated
@@ -14,13 +14,12 @@ organization knowledgebase.
 
 **Four students. Four weeks. One working application.**
 
-WorxForge originated in ITWorx’s four-week Summer 2026 internship, where four
-computer science undergraduates built and locally demonstrated the application
-using a new stack, senior mentorship, and a **GitHub Copilot Business subscription**.
-The students directed coding agents, tested results, and owned implementation.
-The paper presents an observational case study of that experience.
+WorxForge originated in ITWorx's four-week Summer 2026 internship, where four computer science undergraduates built and locally demonstrated an ASP.NET Core and React application with technical mentorship. The students directed coding agents, tested results, and owned the initial delivery. The whitepaper documents this internship case and its evidence limits.
 
-Publication version **1.5** · **12 pages**.
+For a comparable learning plan with all code written manually, the mentor estimates that about two months or more would have been required. This is a retrospective estimate, not a measured speed comparison.
+
+Publication version **1.6** · **11 pages**.
+[Read the eight-page case summary](docs/Whitepaper/WorxForge-LinkedIn-Carousel.pdf).
 
 ## What you can do
 
@@ -243,14 +242,12 @@ Use generic demo content; contribute only code and assets you have permission to
 share publicly, and keep credentials, private documents, and database exports out
 of commits. Retain the ITWORX copyright and license notices.
 
-## Before public publication
+## Responsible publication
 
-The current source tree is sanitized, but the existing private clone's Git history
-still contains removed private files and configuration. Deleting or ignoring a
-file does not remove it from previous commits or branches. Use a clean source
-snapshot with new history, or sanitize and audit every ref that will become public
-before changing the existing repository's visibility.
-See [publication notes](docs/publication.md) for the publication procedure.
+Keep credentials, private documents, database exports, and local configuration out
+of public commits. Review files before publishing; ignoring or deleting a file does
+not remove it from earlier commits. See [publication notes](docs/publication.md)
+for guidance on public source and approved case-study materials.
 
 ## License and attribution
 

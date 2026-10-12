@@ -120,6 +120,7 @@ docs/private/
 # Safe templates stay public. Never put real secrets in tracked appsettings files.
 # Ignoring a path does not erase its earlier Git history.
 
-# Publish only the approved final whitepaper; keep supporting/authoring material private.
+# Publish only the approved finished PDFs; keep supporting/authoring material private.
 /docs/Whitepaper/*
 !/docs/Whitepaper/WorxForge-Juniors-and-AI-Coding-Agents.pdf
+!/docs/Whitepaper/WorxForge-LinkedIn-Carousel.pdf

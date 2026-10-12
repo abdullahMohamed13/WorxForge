@@ -1,6 +1,8 @@
 # WorxForge web app
 
-The ITWorx AI Assets Hub — Discover · Contribute · Share · Reuse.
+An open-source knowledge asset platform.
+
+Discover · Contribute · Share · Reuse.
 
 React 19 + TypeScript + Vite 8. The API selects guest mode through
 `/api/authentication/access-mode`; no Google client ID is required by default.

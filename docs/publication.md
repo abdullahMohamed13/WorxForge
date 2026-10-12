@@ -3,18 +3,12 @@
 The source includes the MIT license naming ITWORX as copyright holder. Retain the
 copyright and permission notices when redistributing it; see [LICENSE](../LICENSE).
 
-## Choose a clean publication source
+## Keep publication material public-safe
 
-The existing private clone retains earlier commits containing removed private
-reference documents and development configuration. Do not make that history
-public without sanitizing and auditing every published ref, including branches
-and tags. Pushing sanitized files to the private remote does not clean old commits.
-Any real credential or signing key previously used must be replaced at its service.
-
-For a new public repository, publish only a reviewed source snapshot with a new
-Git history. If using the prepared source ZIP, extract it into an empty directory
-and initialize a new Git repository there. Do not copy the original `.git`
-directory, private backups, local configuration, dependencies, or build output.
+Review source and documentation for credentials and private data before publishing.
+Keep local configuration, backups, dependencies, and build output out of public
+commits. Ignoring or deleting a file does not remove it from earlier commits.
+Replace any exposed credential at its service.
 
 ## Review the snapshot
 
@@ -45,15 +39,31 @@ default in every environment; authentication and account completion are separate
 work. Email delivery remains a successful no-op until an SMTP sender is implemented
 and registered and an account is configured.
 
-## Approved whitepaper
+## Approved case-study materials
 
-The approved public artifact is
-[Juniors Can. Here’s the Code.](Whitepaper/WorxForge-Juniors-and-AI-Coding-Agents.pdf),
-publication version **1.5**, **12 pages**. Keep its filename and location unchanged.
+[Juniors Can. Here’s the Code.](Whitepaper/WorxForge-Juniors-and-AI-Coding-Agents.pdf)
+is the approved whitepaper, publication version **1.6**, **11 pages**.
+Keep its filename and location unchanged.
 
-SHA-256: `e5f26cb7b45091b6bbf6860768aaad49a353a8f4d746f81e5863af7f5fedb840`.
+SHA-256: `3b69691ec9b8743492999fa57beae632e294691c49028074fe838e6ef21afd79`.
 
-Keep `docs/Whitepaper/` limited to this final PDF. Do not publish editable exports,
-private authoring files, review notes, source requirements, the original training
-workbook, internal academy links, or original screenshots. The approved PDF is
-published as supplied; changes require a separately approved publication artifact.
+The [eight-page case summary](Whitepaper/WorxForge-LinkedIn-Carousel.pdf) is the
+approved carousel.
+
+SHA-256: `3d04a726417ae1d277748f6cbf3c5aa4667592bcb4a181ad1853be93e008c48f`.
+
+Public narrative concerns only the four-student, four-week ITWorx Summer 2026
+internship: the students' AI-assisted project work, technical mentorship, local
+demonstration, and evidence limits. Keep the case scoped to this cohort and
+application. Use provider-neutral coding-agent references, including figures.
+
+The mentor's estimate of about two months or more concerns comparable learning
+with all code written manually. Attribute it as a retrospective estimate, not a
+measured speed comparison, productivity multiplier, or guaranteed learning outcome.
+Distinguish the historical demonstration from the current public release; it does
+not establish current feature completeness or production readiness.
+
+Keep `docs/Whitepaper/` limited to these two finished, approved PDFs. Do not publish
+editable exports, authoring scripts, private source documents, review notes, logs,
+rendered images, original screenshots, or backups. Publish the approved files
+unchanged; revisions require separately approved publication artifacts.
